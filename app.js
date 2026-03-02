@@ -66,8 +66,10 @@ const translations = {
         toast_bulk_success: '✅ {n} trabajadores cargados correctamente',
         toast_import_success: '✅ Respaldo importado correctamente',
         toast_tool_saved: '✅ Herramienta guardada',
+        toast_tool_updated: '✅ Herramienta actualizada',
         toast_tool_deleted: '🗑️ Herramienta eliminada',
         toast_worker_saved: '✅ Trabajador guardado',
+        toast_worker_updated: '✅ Trabajador actualizado',
         toast_worker_deleted: '🗑️ Trabajador eliminado',
         toast_worker_loaned_err: '⚠️ No se puede eliminar, tiene herramientas prestadas',
         toast_loan_saved: '✅ Préstamo registrado',
@@ -95,7 +97,11 @@ const translations = {
         confirm_delete_tool: '¿Eliminar esta herramienta?',
         confirm_import: '⚠️ Esto REEMPLAZARÁ todos los datos actuales.\n¿Continuar?',
         wa_title: '🔧 *CONTROL DE HERRAMIENTAS*',
-        wa_stats: '📊 Total: {total} herr. | {prestadas} prestadas | {disponibles} disponibles'
+        wa_stats: '📊 Total: {total} herr. | {prestadas} prestadas | {disponibles} disponibles',
+        modal_tool_add: 'Agregar Herramienta',
+        modal_tool_edit: 'Editar Herramienta',
+        modal_worker_add: 'Agregar Trabajador',
+        modal_worker_edit: 'Editar Trabajador'
     },
     en: {
         app_title: 'Tool Control',
@@ -161,8 +167,10 @@ const translations = {
         toast_bulk_success: '✅ {n} workers loaded correctly',
         toast_import_success: '✅ Backup imported correctly',
         toast_tool_saved: '✅ Tool saved',
+        toast_tool_updated: '✅ Tool updated',
         toast_tool_deleted: '🗑️ Tool deleted',
         toast_worker_saved: '✅ Worker saved',
+        toast_worker_updated: '✅ Worker updated',
         toast_worker_deleted: '🗑️ Worker deleted',
         toast_worker_loaned_err: '⚠️ Cannot delete, has loaned tools',
         toast_loan_saved: '✅ Loan registered',
@@ -190,7 +198,11 @@ const translations = {
         confirm_delete_tool: 'Delete this tool?',
         confirm_import: '⚠️ This will REPLACE all current data.\nContinue?',
         wa_title: '🔧 *TOOL CONTROL*',
-        wa_stats: '📊 Total: {total} tools | {prestadas} loaned | {disponibles} available'
+        wa_stats: '📊 Total: {total} tools | {prestadas} loaned | {disponibles} available',
+        modal_tool_add: 'Add Tool',
+        modal_tool_edit: 'Edit Tool',
+        modal_worker_add: 'Add Worker',
+        modal_worker_edit: 'Edit Worker'
     }
 };
 
@@ -315,7 +327,7 @@ async function refreshAll() {
 
 // ===== HERRAMIENTAS CRUD =====
 function abrirModalHerramienta(herramienta = null) {
-    document.getElementById('modalHerramientaTitle').textContent = herramienta ? 'Editar Herramienta' : 'Agregar Herramienta';
+    document.getElementById('modalHerramientaTitle').textContent = herramienta ? t('modal_tool_edit') : t('modal_tool_add');
     document.getElementById('herramientaId').value = herramienta ? herramienta.id : '';
     document.getElementById('herramientaNombre').value = herramienta ? herramienta.nombre : '';
     document.getElementById('herramientaCodigo').value = herramienta ? (herramienta.codigo || '') : '';
@@ -336,10 +348,10 @@ async function guardarHerramienta(e) {
     if (id) {
         data.id = parseInt(id);
         await dbPut('herramientas', data);
-        showToast('✅ Herramienta actualizada');
+        showToast(t('toast_tool_updated'));
     } else {
         await dbAdd('herramientas', data);
-        showToast('✅ Herramienta agregada');
+        showToast(t('toast_tool_saved'));
     }
 
     cerrarModal('modalHerramienta');
@@ -348,12 +360,12 @@ async function guardarHerramienta(e) {
 }
 
 async function eliminarHerramienta(id) {
-    if (!confirm('¿Eliminar esta herramienta?')) return;
+    if (!confirm(t('confirm_delete_tool'))) return;
     // Check if it's currently loaned
     const prestamos = await dbGetByIndex('prestamos', 'herramientaId', id);
     const activo = prestamos.find(p => p.activo);
     if (activo) {
-        showToast('⚠️ No se puede eliminar, está prestada');
+        showToast(t('toast_worker_loaned_err')); // Using generic loaned error
         return;
     }
     await dbDelete('herramientas', id);
@@ -413,7 +425,7 @@ async function renderHerramientas() {
 
 // ===== TRABAJADORES CRUD =====
 function abrirModalTrabajador(trabajador = null) {
-    document.getElementById('modalTrabajadorTitle').textContent = trabajador ? 'Editar Trabajador' : 'Agregar Trabajador';
+    document.getElementById('modalTrabajadorTitle').textContent = trabajador ? t('modal_worker_edit') : t('modal_worker_add');
     document.getElementById('trabajadorId').value = trabajador ? trabajador.id : '';
     document.getElementById('trabajadorNombre').value = trabajador ? trabajador.nombre : '';
     document.getElementById('trabajadorPuesto').value = trabajador ? (trabajador.puesto || '') : '';
@@ -431,10 +443,10 @@ async function guardarTrabajador(e) {
     if (id) {
         data.id = parseInt(id);
         await dbPut('trabajadores', data);
-        showToast('✅ Trabajador actualizado');
+        showToast(t('toast_worker_updated'));
     } else {
         await dbAdd('trabajadores', data);
-        showToast('✅ Trabajador agregado');
+        showToast(t('toast_worker_saved'));
     }
 
     cerrarModal('modalTrabajador');

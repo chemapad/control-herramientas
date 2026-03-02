@@ -154,8 +154,21 @@ body {
 
 .view-header {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 16px;
+}
+
+@media (max-width: 500px) {
+  .view-header .search-input {
+    flex: 1 1 100%;
+  }
+
+  .view-header .btn-primary,
+  .view-header .btn-secondary {
+    flex: 1;
+    justify-content: center;
+  }
 }
 
 /* ===== STATS BAR ===== */

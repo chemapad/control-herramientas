@@ -160,13 +160,20 @@ body {
 }
 
 @media (max-width: 500px) {
+  .view-header {
+    flex-direction: column;
+    /* Force vertical stack if wrap is not enough */
+  }
+
   .view-header .search-input {
-    flex: 1 1 100%;
+    width: 100%;
+    flex: none;
   }
 
   .view-header .btn-primary,
   .view-header .btn-secondary {
-    flex: 1;
+    width: 100%;
+    flex: none;
     justify-content: center;
   }
 }

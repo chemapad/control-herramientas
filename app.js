@@ -22,11 +22,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('inputImportar').addEventListener('change', importarDatos);
     document.getElementById('btnCompartirWA').addEventListener('click', compartirWhatsApp);
     document.getElementById('btnConfirmarDevolucion').addEventListener('click', confirmarDevolucion);
+    document.getElementById('btnCargaMasiva').addEventListener('click', () => abrirModal('modalCargaMasiva'));
 
     // Forms
     document.getElementById('formHerramienta').addEventListener('submit', guardarHerramienta);
     document.getElementById('formTrabajador').addEventListener('submit', guardarTrabajador);
     document.getElementById('formPrestamo').addEventListener('submit', guardarPrestamo);
+    document.getElementById('formCargaMasiva').addEventListener('submit', guardarCargaMasiva);
 
     // Search
     document.getElementById('searchHerramientas').addEventListener('input', renderHerramientas);
@@ -458,6 +460,29 @@ async function renderPrestamosActivos() {
       </div>
     `;
     }).join('');
+}
+
+async function guardarCargaMasiva(e) {
+    e.preventDefault();
+    const texto = document.getElementById('listaNombresMasiva').value.trim();
+    if (!texto) return;
+
+    const nombres = texto.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+    if (nombres.length === 0) return;
+
+    let agregados = 0;
+    for (const nombre of nombres) {
+        await dbAdd('trabajadores', {
+            nombre,
+            puesto: ''
+        });
+        agregados++;
+    }
+
+    cerrarModal('modalCargaMasiva');
+    document.getElementById('formCargaMasiva').reset();
+    showToast(`✅ ${agregados} trabajadores cargados correctamente`);
+    await refreshAll();
 }
 
 // ===== HISTORIAL =====

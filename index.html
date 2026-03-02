@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -13,6 +14,7 @@
   <link rel="stylesheet" href="styles.css">
   <title>Control de Herramientas — Obra</title>
 </head>
+
 <body>
 
   <!-- ===== HEADER ===== -->
@@ -77,6 +79,7 @@
   <main id="view-trabajadores" class="view">
     <div class="view-header">
       <input type="search" id="searchTrabajadores" class="search-input" placeholder="Buscar trabajador...">
+      <button id="btnCargaMasiva" class="btn-secondary">📦 Carga Masiva</button>
       <button id="btnAddTrabajador" class="btn-primary">➕ Agregar</button>
     </div>
     <div id="listaTrabajadores" class="cards-list">
@@ -200,7 +203,8 @@
 
       <div class="config-section">
         <h3>📥 Importar Datos</h3>
-        <p class="config-desc">Carga un respaldo recibido del otro turno. <strong>⚠️ Esto reemplaza todos los datos actuales.</strong></p>
+        <p class="config-desc">Carga un respaldo recibido del otro turno. <strong>⚠️ Esto reemplaza todos los datos
+            actuales.</strong></p>
         <label class="btn-secondary btn-full btn-file">
           📥 Importar Respaldo
           <input type="file" id="inputImportar" accept=".json" hidden>
@@ -216,6 +220,23 @@
       <div class="modal-actions">
         <button type="button" class="btn-cancel" onclick="cerrarModal('modalConfig')">Cerrar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: CARGA MASIVA TRABAJADORES ===== -->
+  <div id="modalCargaMasiva" class="modal-overlay">
+    <div class="modal modal-large">
+      <h2>📦 Carga Masiva de Trabajadores</h2>
+      <p class="config-desc">Pega una lista de nombres, uno por línea. Ejemplo:<br>Juan Pérez<br>Carlos López</p>
+      <form id="formCargaMasiva">
+        <div class="form-group">
+          <textarea id="listaNombresMasiva" rows="10" placeholder="Pega los nombres aquí..." required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="cerrarModal('modalCargaMasiva')">Cancelar</button>
+          <button type="submit" class="btn-primary">🚀 Cargar Trabajadores</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -238,4 +259,5 @@
   <script src="db.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>

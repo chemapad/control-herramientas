@@ -1,5 +1,240 @@
 // ===== CONTROL DE HERRAMIENTAS — APP.JS =====
 
+// ===== INTERNATIONALIZATION (i18n) =====
+const translations = {
+    es: {
+        app_title: 'Control de Herramientas',
+        tab_loans: '📋 Préstamos',
+        tab_tools: '🔧 Herramientas',
+        tab_workers: '👷 Trabajadores',
+        stat_total: 'Total',
+        stat_available: 'Disponibles',
+        stat_loaned: 'Prestadas',
+        btn_new_loan: '➕ Nuevo Préstamo',
+        btn_history: '📜 Historial de Hoy',
+        btn_add: '➕ Agregar',
+        btn_bulk_load: '📦 Carga Masiva',
+        btn_export: '📤 Exportar Respaldo',
+        btn_import: '📥 Importar Datos',
+        btn_whatsapp: '📱 Generar Resumen WhatsApp',
+        btn_cancel: 'Cancelar',
+        btn_save: 'Guardar',
+        btn_confirm_loan: '✅ Confirmar Préstamo',
+        btn_close: 'Cerrar',
+        btn_return_selected: '✅ Devolver Seleccionadas',
+        btn_bulk_load_start: '🚀 Cargar Trabajadores',
+        empty_loans: 'No hay préstamos activos',
+        empty_tools: 'No hay herramientas registradas',
+        empty_workers: 'No hay trabajadores registrados',
+        empty_history: 'No hay registros hoy',
+        config_title: '⚙️ Configuración',
+        config_backup_title: '💾 Respaldo de Datos',
+        config_backup_desc: 'Exporta tus datos para compartir con el otro turno o como respaldo de seguridad.',
+        config_import_title: '📥 Importar Datos',
+        config_import_desc: 'Carga un respaldo recibido del otro turno. ⚠️ Esto reemplaza todos los datos actuales.',
+        config_whatsapp_title: '📋 Compartir por WhatsApp',
+        config_whatsapp_desc: 'Genera un resumen de texto de los préstamos activos para enviar por WhatsApp.',
+        config_lang_title: '🌐 Idioma',
+        modal_tool_add: 'Agregar Herramienta',
+        modal_tool_edit: 'Editar Herramienta',
+        modal_worker_add: 'Agregar Trabajador',
+        modal_worker_edit: 'Editar Trabajador',
+        modal_loan_title: 'Nuevo Préstamo',
+        modal_history_title: '📜 Historial de Hoy',
+        modal_bulk_title: '📦 Carga Masiva de Trabajadores',
+        modal_bulk_desc: 'Pega una lista de nombres, uno por línea.',
+        modal_return_title: 'Devolver Herramientas',
+        label_name: 'Nombre',
+        label_code: 'Código / ID (opcional)',
+        label_notes: 'Notas (opcional)',
+        label_worker: 'Trabajador',
+        label_tools_avail: 'Herramientas disponibles',
+        label_date: 'Fecha',
+        label_hour: 'Hora',
+        label_full_name: 'Nombre completo',
+        label_position: 'Puesto (opcional)',
+        placeholder_search_tool: 'Buscar herramienta...',
+        placeholder_search_worker: 'Buscar trabajador...',
+        placeholder_notes: 'Ej: Color rojo, serie XYZ',
+        placeholder_tool_name: 'Ej: Rotomartillo Bosch',
+        placeholder_worker_name: 'Ej: Juan Pérez',
+        placeholder_position: 'Ej: Electricista',
+        placeholder_bulk: 'Pega los nombres aquí...',
+        toast_shared: '📱 Compartido',
+        toast_copied: '📋 Texto copiado al portapapeles',
+        toast_opening_wa: '📱 Abriendo WhatsApp...',
+        toast_bulk_success: '✅ {n} trabajadores cargados correctamente',
+        toast_import_success: '✅ Respaldo importado correctamente',
+        toast_tool_saved: '✅ Herramienta guardada',
+        toast_tool_deleted: '🗑️ Herramienta eliminada',
+        toast_worker_saved: '✅ Trabajador guardado',
+        toast_worker_deleted: '🗑️ Trabajador eliminado',
+        toast_worker_loaned_err: '⚠️ No se puede eliminar, tiene herramientas prestadas',
+        toast_loan_saved: '✅ Préstamo registrado',
+        toast_return_success: '✅ Herramientas devueltas',
+        toast_select_worker_err: '⚠️ Selecciona un trabajador',
+        toast_select_tool_err: '⚠️ Selecciona al menos una herramienta',
+        toast_loan_success: '✅ {n} herramienta(s) asignada(s)',
+        toast_return_selected_success: '✅ {n} herramienta(s) devuelta(s)',
+        toast_no_active_loans: 'No hay préstamos activos para compartir',
+        toast_import_err: '❌ Error al importar: archivo inválido',
+        toast_export_err: '❌ Error al exportar',
+        tool_available: 'Disponible',
+        tool_loaned: 'Prestado',
+        tool_returned: 'Devuelta',
+        label_since: 'Desde',
+        label_due: 'Vence',
+        btn_edit: '✏️ Editar',
+        btn_return: 'Devolver',
+        btn_return_all: 'Devolver Todas',
+        empty_all_loaned: 'Todas las herramientas están prestadas',
+        empty_loans_desc: 'Usa "Nuevo Préstamo" para asignar herramientas',
+        label_unknown_tool: 'Herramienta desconocida',
+        label_notes_prefix: 'Notas',
+        confirm_delete_worker: '¿Eliminar este trabajador?',
+        confirm_delete_tool: '¿Eliminar esta herramienta?',
+        confirm_import: '⚠️ Esto REEMPLAZARÁ todos los datos actuales.\n¿Continuar?',
+        wa_title: '🔧 *CONTROL DE HERRAMIENTAS*',
+        wa_stats: '📊 Total: {total} herr. | {prestadas} prestadas | {disponibles} disponibles'
+    },
+    en: {
+        app_title: 'Tool Control',
+        tab_loans: '📋 Loans',
+        tab_tools: '🔧 Tools',
+        tab_workers: '👷 Workers',
+        stat_total: 'Total',
+        stat_available: 'Available',
+        stat_loaned: 'Loaned',
+        btn_new_loan: '➕ New Loan',
+        btn_history: '📜 Today\'s History',
+        btn_add: '➕ Add',
+        btn_bulk_load: '📦 Bulk Load',
+        btn_export: '📤 Export Backup',
+        btn_import: '📥 Import Data',
+        btn_whatsapp: '📱 Share on WhatsApp',
+        btn_cancel: 'Cancel',
+        btn_save: 'Save',
+        btn_confirm_loan: '✅ Confirm Loan',
+        btn_close: 'Close',
+        btn_return_selected: '✅ Return Selected',
+        btn_bulk_load_start: '🚀 Load Workers',
+        empty_loans: 'No active loans',
+        empty_tools: 'No tools registered',
+        empty_workers: 'No workers registered',
+        empty_history: 'No records today',
+        config_title: '⚙️ Settings',
+        config_backup_title: '💾 Data Backup',
+        config_backup_desc: 'Export your data to share with the other shift or as a security backup.',
+        config_import_title: '📥 Import Data',
+        config_import_desc: 'Load a backup from the other shift. ⚠️ This replaces all current data.',
+        config_whatsapp_title: '📋 Share via WhatsApp',
+        config_whatsapp_desc: 'Generate a text summary of active loans to send via WhatsApp.',
+        config_lang_title: '🌐 Language',
+        modal_tool_add: 'Add Tool',
+        modal_tool_edit: 'Edit Tool',
+        modal_worker_add: 'Add Worker',
+        modal_worker_edit: 'Edit Worker',
+        modal_loan_title: 'New Loan',
+        modal_history_title: '📜 Today\'s History',
+        modal_bulk_title: '📦 Bulk Worker Load',
+        modal_bulk_desc: 'Paste a list of names, one per line.',
+        modal_return_title: 'Return Tools',
+        label_name: 'Name',
+        label_code: 'Code / ID (optional)',
+        label_notes: 'Notes (optional)',
+        label_worker: 'Worker',
+        label_tools_avail: 'Available tools',
+        label_date: 'Date',
+        label_hour: 'Time',
+        label_full_name: 'Full name',
+        label_position: 'Position (optional)',
+        placeholder_search_tool: 'Search tool...',
+        placeholder_search_worker: 'Search worker...',
+        placeholder_notes: 'Ex: Red color, XYZ series',
+        placeholder_tool_name: 'Ex: Bosch Rotary Hammer',
+        placeholder_worker_name: 'Ex: John Doe',
+        placeholder_position: 'Ex: Electrician',
+        placeholder_bulk: 'Paste names here...',
+        toast_shared: '📱 Shared',
+        toast_copied: '📋 Text copied to clipboard',
+        toast_opening_wa: '📱 Opening WhatsApp...',
+        toast_bulk_success: '✅ {n} workers loaded correctly',
+        toast_import_success: '✅ Backup imported correctly',
+        toast_tool_saved: '✅ Tool saved',
+        toast_tool_deleted: '🗑️ Tool deleted',
+        toast_worker_saved: '✅ Worker saved',
+        toast_worker_deleted: '🗑️ Worker deleted',
+        toast_worker_loaned_err: '⚠️ Cannot delete, has loaned tools',
+        toast_loan_saved: '✅ Loan registered',
+        toast_return_success: '✅ Tools returned',
+        toast_select_worker_err: '⚠️ Select a worker',
+        toast_select_tool_err: '⚠️ Select at least one tool',
+        toast_loan_success: '✅ {n} tool(s) assigned',
+        toast_return_selected_success: '✅ {n} tool(s) returned',
+        toast_no_active_loans: 'No active loans to share',
+        toast_import_err: '❌ Import error: invalid file',
+        toast_export_err: '❌ Export error',
+        tool_available: 'Available',
+        tool_loaned: 'Loaned',
+        tool_returned: 'Returned',
+        label_since: 'Since',
+        label_due: 'Due',
+        btn_edit: '✏️ Edit',
+        btn_return: 'Return',
+        btn_return_all: 'Return All',
+        empty_all_loaned: 'All tools are loaned',
+        empty_loans_desc: 'Use "New Loan" to assign tools',
+        label_unknown_tool: 'Unknown tool',
+        label_notes_prefix: 'Notes',
+        confirm_delete_worker: 'Delete this worker?',
+        confirm_delete_tool: 'Delete this tool?',
+        confirm_import: '⚠️ This will REPLACE all current data.\nContinue?',
+        wa_title: '🔧 *TOOL CONTROL*',
+        wa_stats: '📊 Total: {total} tools | {prestadas} loaned | {disponibles} available'
+    }
+};
+
+let currentLang = localStorage.getItem('appLang') || 'es';
+
+function t(key, params = {}) {
+    let text = translations[currentLang][key] || key;
+    for (const [k, v] of Object.entries(params)) {
+        text = text.replace(`{${k}}`, v);
+    }
+    return text;
+}
+
+function updateUI() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.innerText = t(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.placeholder = t(key);
+    });
+
+    // Update labels and other dynamic parts
+    const toolTitle = document.getElementById('modalHerramientaTitle');
+    if (toolTitle) {
+        const isEdit = document.getElementById('herramientaId').value;
+        toolTitle.innerText = isEdit ? t('modal_tool_edit') : t('modal_tool_add');
+    }
+
+    const workerTitle = document.getElementById('modalTrabajadorTitle');
+    if (workerTitle) {
+        const isEdit = document.getElementById('trabajadorId').value;
+        workerTitle.innerText = isEdit ? t('modal_worker_add') : t('modal_worker_edit');
+    }
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('appLang', lang);
+    updateUI();
+    refreshAll();
+}
+
 // ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', async () => {
     // Register Service Worker
@@ -42,6 +277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Load data
+    updateUI();
     await refreshAll();
 });
 
@@ -121,7 +357,7 @@ async function eliminarHerramienta(id) {
         return;
     }
     await dbDelete('herramientas', id);
-    showToast('🗑️ Herramienta eliminada');
+    showToast(t('toast_tool_deleted'));
     await refreshAll();
 }
 
@@ -140,7 +376,7 @@ async function renderHerramientas() {
     const container = document.getElementById('listaHerramientas');
 
     if (herramientas.length === 0) {
-        container.innerHTML = '<p class="empty-state">No hay herramientas registradas</p>';
+        container.innerHTML = `<p class="empty-state">${t('empty_tools')}</p>`;
         return;
     }
 
@@ -148,10 +384,10 @@ async function renderHerramientas() {
         const prestamo = prestamosActivos.find(p => p.herramientaId === h.id);
         const trabajador = prestamo ? trabajadores.find(t => t.id === prestamo.trabajadorId) : null;
         const statusBadge = prestamo
-            ? `<span class="badge badge-red">Prestada</span>`
-            : `<span class="badge badge-green">Disponible</span>`;
+            ? `<span class="badge badge-red">${t('tool_loaned')}</span>`
+            : `<span class="badge badge-green">${t('tool_available')}</span>`;
         const prestamoInfo = prestamo && trabajador
-            ? `<div class="card-subtitle">→ ${trabajador.nombre} · Desde: ${formatHora(prestamo.fecha)}</div>`
+            ? `<div class="card-subtitle">→ ${trabajador.nombre} · ${t('label_since')}: ${formatHora(prestamo.fecha)}</div>`
             : '';
         const codigo = h.codigo ? `<span class="card-subtitle" style="display:inline;margin-left:8px;font-size:0.75rem;">${h.codigo}</span>` : '';
 
@@ -167,7 +403,7 @@ async function renderHerramientas() {
         </div>
         ${prestamoInfo}
         <div class="card-actions" style="margin-top:8px;">
-          <button class="btn-secondary btn-small" onclick="abrirModalHerramienta(${JSON.stringify(h).replace(/"/g, '&quot;')})">✏️ Editar</button>
+          <button class="btn-secondary btn-small" onclick="abrirModalHerramienta(${JSON.stringify(h).replace(/"/g, '&quot;')})">${t('btn_edit')}</button>
           <button class="btn-danger btn-small" onclick="eliminarHerramienta(${h.id})">🗑️</button>
         </div>
       </div>
@@ -207,15 +443,15 @@ async function guardarTrabajador(e) {
 }
 
 async function eliminarTrabajador(id) {
-    if (!confirm('¿Eliminar este trabajador?')) return;
+    if (!confirm(t('confirm_delete_worker'))) return;
     const prestamos = await dbGetByIndex('prestamos', 'trabajadorId', id);
     const activo = prestamos.find(p => p.activo);
     if (activo) {
-        showToast('⚠️ No se puede eliminar, tiene herramientas prestadas');
+        showToast(t('toast_worker_loaned_err'));
         return;
     }
     await dbDelete('trabajadores', id);
-    showToast('🗑️ Trabajador eliminado');
+    showToast(t('toast_worker_deleted'));
     await refreshAll();
 }
 
@@ -228,7 +464,7 @@ async function renderTrabajadores() {
     const container = document.getElementById('listaTrabajadores');
 
     if (trabajadores.length === 0) {
-        container.innerHTML = '<p class="empty-state">No hay trabajadores registrados</p>';
+        container.innerHTML = `<p class="empty-state">${t('empty_workers')}</p>`;
         return;
     }
 
@@ -255,7 +491,7 @@ async function renderTrabajadores() {
           </div>
         </div>
         <div class="card-actions" style="margin-top:8px;">
-          <button class="btn-secondary btn-small" onclick="abrirModalTrabajador(${JSON.stringify(t).replace(/"/g, '&quot;')})">✏️ Editar</button>
+          <button class="btn-secondary btn-small" onclick="abrirModalTrabajador(${JSON.stringify(t).replace(/"/g, '&quot;')})">${t('btn_edit')}</button>
           <button class="btn-danger btn-small" onclick="eliminarTrabajador(${t.id})">🗑️</button>
         </div>
       </div>
@@ -273,7 +509,7 @@ async function abrirNuevoPrestamo() {
 
     // Fill worker select
     const select = document.getElementById('prestamoTrabajador');
-    select.innerHTML = '<option value="">— Seleccionar trabajador —</option>' +
+    select.innerHTML = `<option value="">— ${t('label_worker')} —</option>` +
         trabajadores.map(t => `<option value="${t.id}">${t.nombre}${t.puesto ? ' (' + t.puesto + ')' : ''}</option>`).join('');
 
     // Fill available tools checklist
@@ -281,7 +517,7 @@ async function abrirNuevoPrestamo() {
     const disponibles = herramientas.filter(h => !herramientasPrestadas.has(h.id));
 
     if (disponibles.length === 0) {
-        checklist.innerHTML = '<p class="empty-state">Todas las herramientas están prestadas</p>';
+        checklist.innerHTML = `<p class="empty-state">${t('empty_all_loaned')}</p>`;
     } else {
         checklist.innerHTML = disponibles.map(h => `
       <label class="checklist-item">
@@ -310,11 +546,11 @@ async function guardarPrestamo(e) {
     const checked = document.querySelectorAll('#checklistHerramientas input[type="checkbox"]:checked');
 
     if (!trabajadorId) {
-        showToast('⚠️ Selecciona un trabajador');
+        showToast(t('toast_select_worker_err'));
         return;
     }
     if (checked.length === 0) {
-        showToast('⚠️ Selecciona al menos una herramienta');
+        showToast(t('toast_select_tool_err'));
         return;
     }
 
@@ -331,7 +567,7 @@ async function guardarPrestamo(e) {
     }
 
     cerrarModal('modalPrestamo');
-    showToast(`✅ ${checked.length} herramienta${checked.length > 1 ? 's' : ''} asignada${checked.length > 1 ? 's' : ''}`);
+    showToast(t('toast_loan_success', { n: checked.length }));
     await refreshAll();
 }
 
@@ -354,8 +590,8 @@ async function abrirDevolucion(trabajadorId) {
       <label class="checklist-item">
         <input type="checkbox" value="${p.id}" checked>
         <div>
-          <div class="checklist-item-label">${h ? h.nombre : 'Herramienta desconocida'}</div>
-          <div class="checklist-item-code">Prestada: ${formatHora(p.fecha)}</div>
+          <div class="checklist-item-label">${h ? h.nombre : t('label_unknown_tool')}</div>
+          <div class="checklist-item-code">${t('tool_loaned')}: ${formatHora(p.fecha)}</div>
         </div>
       </label>
     `;
@@ -367,7 +603,7 @@ async function abrirDevolucion(trabajadorId) {
 async function confirmarDevolucion() {
     const checked = document.querySelectorAll('#checklistDevolucion input[type="checkbox"]:checked');
     if (checked.length === 0) {
-        showToast('⚠️ Selecciona al menos una herramienta');
+        showToast(t('toast_select_tool_err'));
         return;
     }
 
@@ -380,7 +616,7 @@ async function confirmarDevolucion() {
     }
 
     cerrarModal('modalDevolucion');
-    showToast(`✅ ${checked.length} herramienta${checked.length > 1 ? 's' : ''} devuelta${checked.length > 1 ? 's' : ''}`);
+    showToast(t('toast_return_selected_success', { n: checked.length }));
     await refreshAll();
 }
 
@@ -389,7 +625,7 @@ async function devolverUna(prestamoId) {
     prestamo.activo = 0;
     prestamo.fechaDevolucion = new Date().toISOString();
     await dbPut('prestamos', prestamo);
-    showToast('✅ Herramienta devuelta');
+    showToast(t('toast_return_success'));
     await refreshAll();
 }
 
@@ -412,7 +648,7 @@ async function renderPrestamosActivos() {
     const container = document.getElementById('listaPrestamos');
 
     if (activos.length === 0) {
-        container.innerHTML = '<p class="empty-state">No hay préstamos activos<br><small>Usa "Nuevo Préstamo" para asignar herramientas</small></p>';
+        container.innerHTML = `<p class="empty-state">${t('empty_loans')}<br><small>${t('empty_loans_desc')}</small></p>`;
         return;
     }
 
@@ -437,9 +673,9 @@ async function renderPrestamosActivos() {
         <div class="tool-item">
           <div>
             <div class="tool-item-name">${h ? h.nombre : '?'}${h && h.codigo ? ` <small style="color:var(--text-muted)">(${h.codigo})</small>` : ''}</div>
-            <div class="tool-item-time">Desde: ${formatHora(p.fecha)}</div>
+            <div class="tool-item-time">${t('label_since')}: ${formatHora(p.fecha)}</div>
           </div>
-          <button class="btn-devolver" onclick="devolverUna(${p.id})">Devolver</button>
+          <button class="btn-devolver" onclick="devolverUna(${p.id})">${t('btn_return')}</button>
         </div>
       `;
         }).join('');
@@ -451,10 +687,10 @@ async function renderPrestamosActivos() {
             <div class="worker-avatar" style="background:${colors[colorIdx]};">${initials}</div>
             <div>
               <div class="worker-name">${worker.nombre}</div>
-              <div class="worker-tools-count">${loans.length} herramienta${loans.length > 1 ? 's' : ''}</div>
+              <div class="worker-tools-count">${loans.length} ${t('tab_tools').toLowerCase()}</div>
             </div>
           </div>
-          <button class="btn-devolver" onclick="abrirDevolucion(${wId})">Devolver Todas</button>
+          <button class="btn-devolver" onclick="abrirDevolucion(${wId})">${t('btn_return_all')}</button>
         </div>
         ${toolsHtml}
       </div>
@@ -481,7 +717,7 @@ async function guardarCargaMasiva(e) {
 
     cerrarModal('modalCargaMasiva');
     document.getElementById('formCargaMasiva').reset();
-    showToast(`✅ ${agregados} trabajadores cargados correctamente`);
+    showToast(t('toast_bulk_success', { n: agregados }));
     await refreshAll();
 }
 
@@ -503,14 +739,14 @@ async function mostrarHistorial() {
     const container = document.getElementById('listaHistorial');
 
     if (delHoy.length === 0) {
-        container.innerHTML = '<p class="empty-state">No hay registros hoy</p>';
+        container.innerHTML = `<p class="empty-state">${t('empty_history')}</p>`;
     } else {
         container.innerHTML = delHoy.map(p => {
             const h = herramientas.find(hr => hr.id === p.herramientaId);
             const w = trabajadores.find(t => t.id === p.trabajadorId);
             const esDevolucion = p.fechaDevolucion && p.fechaDevolucion.slice(0, 10) === hoy;
             const tipo = p.activo ? '🔴' : (esDevolucion ? '🟢' : '🔴');
-            const accion = p.activo ? 'Prestada' : (esDevolucion ? 'Devuelta' : 'Prestada');
+            const accion = p.activo ? t('tool_loaned') : (esDevolucion ? t('tool_returned') : t('tool_loaned'));
             const hora = esDevolucion && !p.activo ? formatHora(p.fechaDevolucion) : formatHora(p.fecha);
 
             return `
@@ -541,9 +777,9 @@ async function exportarDatos() {
         a.download = `respaldo-obra-${fecha}-${hora}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        showToast('📤 Respaldo exportado');
+        showToast(t('toast_tool_saved')); // Using as backup saved
     } catch (err) {
-        showToast('❌ Error al exportar');
+        showToast(t('toast_export_err'));
     }
 }
 
@@ -551,7 +787,7 @@ async function importarDatos(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!confirm('⚠️ Esto REEMPLAZARÁ todos los datos actuales.\n¿Continuar?')) {
+    if (!confirm(t('confirm_import'))) {
         e.target.value = '';
         return;
     }
@@ -559,10 +795,10 @@ async function importarDatos(e) {
     try {
         const text = await file.text();
         await importarRespaldo(text);
-        showToast('📥 Datos importados correctamente');
+        showToast(t('toast_import_success'));
         await refreshAll();
     } catch (err) {
-        showToast('❌ Error al importar: archivo inválido');
+        showToast(t('toast_import_err'));
     }
     e.target.value = '';
 }
@@ -575,7 +811,7 @@ async function compartirWhatsApp() {
     const activos = prestamos.filter(p => p.activo);
 
     if (activos.length === 0) {
-        showToast('No hay préstamos activos para compartir');
+        showToast(t('toast_no_active_loans'));
         return;
     }
 
@@ -586,19 +822,23 @@ async function compartirWhatsApp() {
         groups[p.trabajadorId].push(p);
     }
 
-    let text = `🔧 *CONTROL DE HERRAMIENTAS*\n📅 ${formatFecha(new Date())} · ${formatHora(new Date())}\n\n`;
+    let text = `${t('wa_title')}\n📅 ${formatFecha(new Date())} · ${formatHora(new Date())}\n\n`;
 
     for (const [wId, loans] of Object.entries(groups)) {
         const w = trabajadores.find(t => t.id === parseInt(wId));
-        text += `👷 *${w ? w.nombre : 'Desconocido'}*\n`;
+        text += `👷 *${w ? w.nombre : 'Unknown'}*\n`;
         for (const p of loans) {
             const h = herramientas.find(hr => hr.id === p.herramientaId);
-            text += `   • ${h ? h.nombre : '?'}${h && h.codigo ? ' (' + h.codigo + ')' : ''} — desde ${formatHora(p.fecha)}\n`;
+            text += `   • ${h ? h.nombre : '?'}${h && h.codigo ? ' (' + h.codigo + ')' : ''} — ${t('label_since')} ${formatHora(p.fecha)}\n`;
         }
         text += '\n';
     }
 
-    text += `📊 Total: ${herramientas.length} herr. | ${activos.length} prestadas | ${herramientas.length - activos.length} disponibles`;
+    text += t('wa_stats', {
+        total: herramientas.length,
+        prestadas: activos.length,
+        disponibles: herramientas.length - activos.length
+    });
 
     // Use WhatsApp direct link for better mobile experience
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;

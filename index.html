@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <title>Control de Herramientas — Obra</title>
+  <title data-i18n="app_title">Control de Herramientas — Obra</title>
 </head>
 
 <body>
@@ -21,16 +21,17 @@
   <header class="app-header">
     <div class="header-logo">
       <img src="logo.svg" alt="Accelevation Logo" class="app-logo">
-      <h1>Control de Herramientas</h1>
+      <h1 data-i18n="app_title">Control de Herramientas</h1>
     </div>
-    <button id="btnConfig" class="btn-icon" title="Configuración">⚙️</button>
+    <button id="btnConfig" class="btn-icon" title="Configuración" data-i18n-title="config_title">⚙️</button>
   </header>
 
   <!-- ===== TABS ===== -->
   <nav class="tabs">
-    <button class="tab active" data-tab="prestamos">📋 Préstamos</button>
-    <button class="tab" data-tab="herramientas">🔧 Herramientas</button>
-    <button class="tab" data-tab="trabajadores">👷 Trabajadores</button>
+    <button class="tab active" data-tab="prestamos" data-i18n="tab_loans">📋 Préstamos</button>
+    <button class="tab" data-tab="herramientas" data-i18n="tab_tools">🔧 Herramientas</button>
+    <button class="tab" data-tab="trabajadores" data-tab-name="trabajadores" data-i18n="tab_workers">👷
+      Trabajadores</button>
   </nav>
 
   <!-- ===== VISTA: PRÉSTAMOS ACTIVOS ===== -->
@@ -39,20 +40,20 @@
     <div class="stats-bar">
       <div class="stat">
         <span class="stat-num" id="statTotal">0</span>
-        <span class="stat-label">Total</span>
+        <span class="stat-label" data-i18n="stat_total">Total</span>
       </div>
       <div class="stat stat-green">
         <span class="stat-num" id="statDisponibles">0</span>
-        <span class="stat-label">Disponibles</span>
+        <span class="stat-label" data-i18n="stat_available">Disponibles</span>
       </div>
       <div class="stat stat-red">
         <span class="stat-num" id="statPrestadas">0</span>
-        <span class="stat-label">Prestadas</span>
+        <span class="stat-label" data-i18n="stat_loaned">Prestadas</span>
       </div>
     </div>
 
     <!-- Botón nuevo préstamo -->
-    <button id="btnNuevoPrestamo" class="btn-primary btn-full">
+    <button id="btnNuevoPrestamo" class="btn-primary btn-full" data-i18n="btn_new_loan">
       <span>➕</span> Nuevo Préstamo
     </button>
 
@@ -62,7 +63,7 @@
     </div>
 
     <!-- Historial -->
-    <button id="btnHistorial" class="btn-secondary btn-full" style="margin-top:12px;">
+    <button id="btnHistorial" class="btn-secondary btn-full" style="margin-top:12px;" data-i18n="btn_history">
       📜 Historial de Hoy
     </button>
   </main>
@@ -70,8 +71,9 @@
   <!-- ===== VISTA: CATÁLOGO DE HERRAMIENTAS ===== -->
   <main id="view-herramientas" class="view">
     <div class="view-header">
-      <input type="search" id="searchHerramientas" class="search-input" placeholder="Buscar herramienta...">
-      <button id="btnAddHerramienta" class="btn-primary">➕ Agregar</button>
+      <input type="search" id="searchHerramientas" class="search-input" placeholder="Buscar herramienta..."
+        data-i18n-placeholder="placeholder_search_tool">
+      <button id="btnAddHerramienta" class="btn-primary" data-i18n="btn_add">➕ Agregar</button>
     </div>
     <div id="listaHerramientas" class="cards-list">
       <p class="empty-state">No hay herramientas registradas</p>
@@ -81,9 +83,10 @@
   <!-- ===== VISTA: TRABAJADORES ===== -->
   <main id="view-trabajadores" class="view">
     <div class="view-header">
-      <input type="search" id="searchTrabajadores" class="search-input" placeholder="Buscar trabajador...">
-      <button id="btnCargaMasiva" class="btn-secondary">📦 Carga Masiva</button>
-      <button id="btnAddTrabajador" class="btn-primary">➕ Agregar</button>
+      <input type="search" id="searchTrabajadores" class="search-input" placeholder="Buscar trabajador..."
+        data-i18n-placeholder="placeholder_search_worker">
+      <button id="btnCargaMasiva" class="btn-secondary" data-i18n="btn_bulk_load">📦 Carga Masiva</button>
+      <button id="btnAddTrabajador" class="btn-primary" data-i18n="btn_add">➕ Agregar</button>
     </div>
     <div id="listaTrabajadores" class="cards-list">
       <p class="empty-state">No hay trabajadores registrados</p>
@@ -93,24 +96,27 @@
   <!-- ===== MODAL: AGREGAR/EDITAR HERRAMIENTA ===== -->
   <div id="modalHerramienta" class="modal-overlay">
     <div class="modal">
-      <h2 id="modalHerramientaTitle">Agregar Herramienta</h2>
+      <h2 id="modalHerramientaTitle" data-i18n="modal_tool_add">Agregar Herramienta</h2>
       <form id="formHerramienta">
         <input type="hidden" id="herramientaId">
         <div class="form-group">
-          <label for="herramientaNombre">Nombre</label>
-          <input type="text" id="herramientaNombre" placeholder="Ej: Rotomartillo Bosch" required>
+          <label for="herramientaNombre" data-i18n="label_name">Nombre</label>
+          <input type="text" id="herramientaNombre" placeholder="Ej: Rotomartillo Bosch"
+            data-i18n-placeholder="placeholder_tool_name" required>
         </div>
         <div class="form-group">
-          <label for="herramientaCodigo">Código / ID (opcional)</label>
+          <label for="herramientaCodigo" data-i18n="label_code">Código / ID (opcional)</label>
           <input type="text" id="herramientaCodigo" placeholder="Ej: HRR-001">
         </div>
         <div class="form-group">
-          <label for="herramientaNotas">Notas (opcional)</label>
-          <input type="text" id="herramientaNotas" placeholder="Ej: Color rojo, serie XYZ">
+          <label for="herramientaNotas" data-i18n="label_notes">Notas (opcional)</label>
+          <input type="text" id="herramientaNotas" placeholder="Ej: Color rojo, serie XYZ"
+            data-i18n-placeholder="placeholder_notes">
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="cerrarModal('modalHerramienta')">Cancelar</button>
-          <button type="submit" class="btn-primary">Guardar</button>
+          <button type="button" class="btn-cancel" onclick="cerrarModal('modalHerramienta')"
+            data-i18n="btn_cancel">Cancelar</button>
+          <button type="submit" class="btn-primary" data-i18n="btn_save">Guardar</button>
         </div>
       </form>
     </div>
@@ -119,20 +125,23 @@
   <!-- ===== MODAL: AGREGAR/EDITAR TRABAJADOR ===== -->
   <div id="modalTrabajador" class="modal-overlay">
     <div class="modal">
-      <h2 id="modalTrabajadorTitle">Agregar Trabajador</h2>
+      <h2 id="modalTrabajadorTitle" data-i18n="modal_worker_add">Agregar Trabajador</h2>
       <form id="formTrabajador">
         <input type="hidden" id="trabajadorId">
         <div class="form-group">
-          <label for="trabajadorNombre">Nombre completo</label>
-          <input type="text" id="trabajadorNombre" placeholder="Ej: Juan Pérez" required>
+          <label for="trabajadorNombre" data-i18n="label_full_name">Nombre completo</label>
+          <input type="text" id="trabajadorNombre" placeholder="Ej: Juan Pérez"
+            data-i18n-placeholder="placeholder_worker_name" required>
         </div>
         <div class="form-group">
-          <label for="trabajadorPuesto">Puesto (opcional)</label>
-          <input type="text" id="trabajadorPuesto" placeholder="Ej: Electricista">
+          <label for="trabajadorPuesto" data-i18n="label_position">Puesto (opcional)</label>
+          <input type="text" id="trabajadorPuesto" placeholder="Ej: Electricista"
+            data-i18n-placeholder="placeholder_position">
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="cerrarModal('modalTrabajador')">Cancelar</button>
-          <button type="submit" class="btn-primary">Guardar</button>
+          <button type="button" class="btn-cancel" onclick="cerrarModal('modalTrabajador')"
+            data-i18n="btn_cancel">Cancelar</button>
+          <button type="submit" class="btn-primary" data-i18n="btn_save">Guardar</button>
         </div>
       </form>
     </div>
@@ -141,40 +150,42 @@
   <!-- ===== MODAL: NUEVO PRÉSTAMO EN LOTE ===== -->
   <div id="modalPrestamo" class="modal-overlay">
     <div class="modal modal-large">
-      <h2>Nuevo Préstamo</h2>
+      <h2 data-i18n="modal_loan_title">Nuevo Préstamo</h2>
       <form id="formPrestamo">
         <!-- Paso 1: Seleccionar trabajador -->
         <div class="form-group">
-          <label for="prestamoTrabajador">Trabajador</label>
+          <label for="prestamoTrabajador" data-i18n="label_worker">Trabajador</label>
           <select id="prestamoTrabajador" required>
-            <option value="">— Seleccionar trabajador —</option>
+            <option value="" data-i18n="label_worker">— Seleccionar trabajador —</option>
           </select>
         </div>
         <!-- Paso 2: Seleccionar herramientas -->
         <div class="form-group">
-          <label>Herramientas disponibles</label>
+          <label data-i18n="label_tools_avail">Herramientas disponibles</label>
           <div id="checklistHerramientas" class="checklist">
-            <p class="empty-state">No hay herramientas disponibles</p>
+            <p class="empty-state" data-i18n="empty_tools">No hay herramientas disponibles</p>
           </div>
         </div>
         <!-- Fecha/hora auto -->
         <div class="form-row">
           <div class="form-group">
-            <label>Fecha</label>
+            <label data-i18n="label_date">Fecha</label>
             <input type="text" id="prestamoFecha" readonly>
           </div>
           <div class="form-group">
-            <label>Hora</label>
+            <label data-i18n="label_hour">Hora</label>
             <input type="text" id="prestamoHora" readonly>
           </div>
         </div>
         <div class="form-group">
-          <label for="prestamoNotas">Notas (opcional)</label>
-          <input type="text" id="prestamoNotas" placeholder="Ej: Para trabajo en 2do piso">
+          <label for="prestamoNotas" data-i18n="label_notes">Notas (opcional)</label>
+          <input type="text" id="prestamoNotas" placeholder="Ej: Para trabajo en 2do piso"
+            data-i18n-placeholder="placeholder_notes">
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="cerrarModal('modalPrestamo')">Cancelar</button>
-          <button type="submit" class="btn-primary">✅ Confirmar Préstamo</button>
+          <button type="button" class="btn-cancel" onclick="cerrarModal('modalPrestamo')"
+            data-i18n="btn_cancel">Cancelar</button>
+          <button type="submit" class="btn-primary" data-i18n="btn_confirm_loan">✅ Confirmar Préstamo</button>
         </div>
       </form>
     </div>
@@ -183,45 +194,57 @@
   <!-- ===== MODAL: HISTORIAL ===== -->
   <div id="modalHistorial" class="modal-overlay">
     <div class="modal modal-large">
-      <h2>📜 Historial de Hoy</h2>
+      <h2 data-i18n="modal_history_title">📜 Historial de Hoy</h2>
       <div id="listaHistorial" class="cards-list">
-        <p class="empty-state">No hay registros hoy</p>
+        <p class="empty-state" data-i18n="empty_history">No hay registros hoy</p>
       </div>
       <div class="modal-actions">
-        <button type="button" class="btn-cancel" onclick="cerrarModal('modalHistorial')">Cerrar</button>
+        <button type="button" class="btn-cancel" onclick="cerrarModal('modalHistorial')"
+          data-i18n="btn_close">Cerrar</button>
       </div>
     </div>
   </div>
 
-  <!-- ===== MODAL: CONFIGURACIÓN / RESPALDO ===== -->
   <div id="modalConfig" class="modal-overlay">
     <div class="modal">
-      <h2>⚙️ Configuración</h2>
+      <h2 data-i18n="config_title">⚙️ Configuración</h2>
 
       <div class="config-section">
-        <h3>💾 Respaldo de Datos</h3>
-        <p class="config-desc">Exporta tus datos para compartir con el otro turno o como respaldo de seguridad.</p>
-        <button id="btnExportar" class="btn-primary btn-full">📤 Exportar Respaldo</button>
+        <h3 data-i18n="config_lang_title">🌐 Idioma / Language</h3>
+        <div class="form-row">
+          <button onclick="setLanguage('es')" class="btn-secondary btn-full">Español 🇪🇸</button>
+          <button onclick="setLanguage('en')" class="btn-secondary btn-full">English 🇺🇸</button>
+        </div>
       </div>
 
       <div class="config-section">
-        <h3>📥 Importar Datos</h3>
-        <p class="config-desc">Carga un respaldo recibido del otro turno. <strong>⚠️ Esto reemplaza todos los datos
-            actuales.</strong></p>
+        <h3 data-i18n="config_backup_title">💾 Respaldo de Datos</h3>
+        <p class="config-desc" data-i18n="config_backup_desc">Exporta tus datos para compartir con el otro turno o como
+          respaldo de seguridad.</p>
+        <button id="btnExportar" class="btn-primary btn-full" data-i18n="btn_export">📤 Exportar Respaldo</button>
+      </div>
+
+      <div class="config-section">
+        <h3 data-i18n="config_import_title">📥 Importar Datos</h3>
+        <p class="config-desc" data-i18n="config_import_desc">Carga un respaldo recibido del otro turno. <strong>⚠️ Esto
+            reemplaza todos los datos actuales.</strong></p>
         <label class="btn-secondary btn-full btn-file">
-          📥 Importar Respaldo
+          <span data-i18n="btn_import">📥 Importar Respaldo</span>
           <input type="file" id="inputImportar" accept=".json" hidden>
         </label>
       </div>
 
       <div class="config-section">
-        <h3>📋 Compartir por WhatsApp</h3>
-        <p class="config-desc">Genera un resumen de texto de los préstamos activos para enviar por WhatsApp.</p>
-        <button id="btnCompartirWA" class="btn-whatsapp btn-full">📱 Generar Resumen WhatsApp</button>
+        <h3 data-i18n="config_whatsapp_title">📋 Compartir por WhatsApp</h3>
+        <p class="config-desc" data-i18n="config_whatsapp_desc">Genera un resumen de texto de los préstamos activos para
+          enviar por WhatsApp.</p>
+        <button id="btnCompartirWA" class="btn-whatsapp btn-full" data-i18n="btn_whatsapp">📱 Generar Resumen
+          WhatsApp</button>
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="btn-cancel" onclick="cerrarModal('modalConfig')">Cerrar</button>
+        <button type="button" class="btn-cancel" onclick="cerrarModal('modalConfig')"
+          data-i18n="btn_close">Cerrar</button>
       </div>
     </div>
   </div>
@@ -229,15 +252,17 @@
   <!-- ===== MODAL: CARGA MASIVA TRABAJADORES ===== -->
   <div id="modalCargaMasiva" class="modal-overlay">
     <div class="modal modal-large">
-      <h2>📦 Carga Masiva de Trabajadores</h2>
-      <p class="config-desc">Pega una lista de nombres, uno por línea. Ejemplo:<br>Juan Pérez<br>Carlos López</p>
+      <h2 data-i18n="modal_bulk_title">📦 Carga Masiva de Trabajadores</h2>
+      <p class="config-desc" data-i18n="modal_bulk_desc">Pega una lista de nombres, uno por línea.</p>
       <form id="formCargaMasiva">
         <div class="form-group">
-          <textarea id="listaNombresMasiva" rows="10" placeholder="Pega los nombres aquí..." required></textarea>
+          <textarea id="listaNombresMasiva" rows="10" placeholder="Pega los nombres aquí..."
+            data-i18n-placeholder="placeholder_bulk" required></textarea>
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="cerrarModal('modalCargaMasiva')">Cancelar</button>
-          <button type="submit" class="btn-primary">🚀 Cargar Trabajadores</button>
+          <button type="button" class="btn-cancel" onclick="cerrarModal('modalCargaMasiva')"
+            data-i18n="btn_cancel">Cancelar</button>
+          <button type="submit" class="btn-primary" data-i18n="btn_bulk_load_start">🚀 Cargar Trabajadores</button>
         </div>
       </form>
     </div>
@@ -246,12 +271,14 @@
   <!-- ===== MODAL: DEVOLUCIÓN EN LOTE ===== -->
   <div id="modalDevolucion" class="modal-overlay">
     <div class="modal modal-large">
-      <h2>Devolver Herramientas</h2>
+      <h2 data-i18n="modal_return_title">Devolver Herramientas</h2>
       <p id="devolucionTrabajadorNombre" class="devolucion-worker"></p>
       <div id="checklistDevolucion" class="checklist"></div>
       <div class="modal-actions">
-        <button type="button" class="btn-cancel" onclick="cerrarModal('modalDevolucion')">Cancelar</button>
-        <button id="btnConfirmarDevolucion" class="btn-primary">✅ Devolver Seleccionadas</button>
+        <button type="button" class="btn-cancel" onclick="cerrarModal('modalDevolucion')"
+          data-i18n="btn_cancel">Cancelar</button>
+        <button id="btnConfirmarDevolucion" class="btn-primary" data-i18n="btn_return_selected">✅ Devolver
+          Seleccionadas</button>
       </div>
     </div>
   </div>

@@ -235,8 +235,8 @@ function updateUI() {
 
     const workerTitle = document.getElementById('modalTrabajadorTitle');
     if (workerTitle) {
-        const isEdit = document.getElementById('trabajadorId').value;
-        workerTitle.innerText = isEdit ? t('modal_worker_add') : t('modal_worker_edit');
+        const wId = document.getElementById('trabajadorId').value;
+        workerTitle.innerText = wId ? t('modal_worker_edit') : t('modal_worker_add');
     }
 }
 

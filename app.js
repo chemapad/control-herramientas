@@ -575,21 +575,27 @@ async function compartirWhatsApp() {
 
     text += `📊 Total: ${herramientas.length} herr. | ${activos.length} prestadas | ${herramientas.length - activos.length} disponibles`;
 
-    // Try native share, fallback to clipboard
-    if (navigator.share) {
-        try {
-            await navigator.share({ text });
-            showToast('📱 Compartido');
-            return;
-        } catch (e) { /* user cancelled, fallback */ }
-    }
+    // Use WhatsApp direct link for better mobile experience
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
 
     try {
-        await navigator.clipboard.writeText(text);
-        showToast('📋 Texto copiado al portapapeles');
+        window.open(whatsappUrl, '_blank');
+        showToast('📱 Abriendo WhatsApp...');
     } catch (e) {
-        // Final fallback: prompt
-        prompt('Copia este texto:', text);
+        // If window.open fails, try native share as fallback
+        if (navigator.share) {
+            try {
+                await navigator.share({ text });
+                showToast('📱 Compartido');
+            } catch (err) {
+                // Final fallback to clipboard
+                await navigator.clipboard.writeText(text);
+                showToast('📋 Texto copiado (falló WhatsApp)');
+            }
+        } else {
+            await navigator.clipboard.writeText(text);
+            showToast('📋 Texto copiado al portapapeles');
+        }
     }
 }
 

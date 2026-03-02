@@ -20,13 +20,15 @@
   --whatsapp: #25d366;
   --radius: 14px;
   --radius-sm: 10px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   --transition: 0.2s ease;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* ===== RESET ===== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -59,10 +61,22 @@ body {
   z-index: 100;
 }
 
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-logo {
+  height: 32px;
+  width: auto;
+}
+
 .app-header h1 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
 .btn-icon {
@@ -127,8 +141,15 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .view-header {
@@ -160,8 +181,13 @@ body {
   color: var(--text-primary);
 }
 
-.stat-green .stat-num { color: var(--green); }
-.stat-red .stat-num { color: var(--red); }
+.stat-green .stat-num {
+  color: var(--green);
+}
+
+.stat-red .stat-num {
+  color: var(--red);
+}
 
 .stat-label {
   font-size: 0.72rem;
@@ -450,7 +476,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 8px 0;
-  border-top: 1px solid rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .tool-item:first-child {
@@ -502,8 +528,13 @@ body {
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 .modal h2 {
@@ -524,8 +555,13 @@ body {
   margin-top: 18px;
 }
 
-.modal-actions .btn-cancel { flex: 1; }
-.modal-actions .btn-primary { flex: 1.5; }
+.modal-actions .btn-cancel {
+  flex: 1;
+}
+
+.modal-actions .btn-primary {
+  flex: 1.5;
+}
 
 /* ===== FORMS ===== */
 .form-group {
@@ -694,7 +730,7 @@ body {
   align-items: center;
   gap: 10px;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .historial-item:last-child {

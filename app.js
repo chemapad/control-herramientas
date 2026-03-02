@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v6) =====
-console.log('App version: 6.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v7) =====
+console.log('App version: 7.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -99,10 +99,12 @@ const translations = {
         confirm_import: '⚠️ Esto REEMPLAZARÁ todos los datos actuales.\n¿Continuar?',
         wa_title: '🔧 *CONTROL DE HERRAMIENTAS*',
         wa_stats: '📊 Total: {total} herr. | {prestadas} prestadas | {disponibles} disponibles',
+        label_tools_short: 'herr.',
         modal_tool_add: 'Agregar Herramienta',
         modal_tool_edit: 'Editar Herramienta',
         modal_worker_add: 'Agregar Trabajador',
-        modal_worker_edit: 'Editar Trabajador'
+        modal_worker_edit: 'Editar Trabajador',
+        toast_wa_fallback: '📋 Texto copiado (falló WhatsApp)'
     },
     en: {
         app_title: 'Tool Control',
@@ -200,10 +202,12 @@ const translations = {
         confirm_import: '⚠️ This will REPLACE all current data.\nContinue?',
         wa_title: '🔧 *TOOL CONTROL*',
         wa_stats: '📊 Total: {total} tools | {prestadas} loaned | {disponibles} available',
+        label_tools_short: 'tools',
         modal_tool_add: 'Add Tool',
         modal_tool_edit: 'Edit Tool',
         modal_worker_add: 'Add Worker',
-        modal_worker_edit: 'Edit Worker'
+        modal_worker_edit: 'Edit Worker',
+        toast_wa_fallback: '📋 Text copied (WhatsApp failed)'
     }
 };
 
@@ -492,7 +496,7 @@ async function renderTrabajadores() {
     container.innerHTML = trabajadores.map(t => {
         const count = activos.filter(p => p.trabajadorId === t.id).length;
         const countBadge = count > 0
-            ? `<span class="badge badge-yellow">${count} herr.</span>`
+            ? `<span class="badge badge-yellow">${count} ${t('label_tools_short')}</span>`
             : '';
         const puesto = t.puesto ? `<div class="card-subtitle">${t.puesto}</div>` : '';
 
@@ -872,7 +876,7 @@ async function compartirWhatsApp() {
             } catch (err) {
                 // Final fallback to clipboard
                 await navigator.clipboard.writeText(text);
-                showToast('📋 Texto copiado (falló WhatsApp)');
+                showToast(t('toast_wa_fallback'));
             }
         } else {
             await navigator.clipboard.writeText(text);

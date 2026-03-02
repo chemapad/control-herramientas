@@ -1,4 +1,4 @@
-const CACHE_NAME = 'obra-control-v6';
+const CACHE_NAME = 'obra-control-v7';
 const ASSETS = [
     './',
     './index.html',

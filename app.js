@@ -1,4 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS =====
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v6) =====
+console.log('App version: 6.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -224,6 +225,10 @@ function updateUI() {
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
         el.placeholder = t(key);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        el.title = t(key);
     });
 
     // Update labels and other dynamic parts

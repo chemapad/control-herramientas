@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#ff6b35">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Control de herramientas para obra de construcción - Funciona offline">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <title>Control de Herramientas — Obra</title>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <h1>🔧 Control de Herramientas</h1>
+    <button id="btnConfig" class="btn-icon" title="Configuración">⚙️</button>
+  </header>
+
+  <!-- ===== TABS ===== -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="prestamos">📋 Préstamos</button>
+    <button class="tab" data-tab="herramientas">🔧 Herramientas</button>
+    <button class="tab" data-tab="trabajadores">👷 Trabajadores</button>
+  </nav>
+
+  <!-- ===== VISTA: PRÉSTAMOS ACTIVOS ===== -->
+  <main id="view-prestamos" class="view active">
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-num" id="statTotal">0</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat stat-green">
+        <span class="stat-num" id="statDisponibles">0</span>
+        <span class="stat-label">Disponibles</span>
+      </div>
+      <div class="stat stat-red">
+        <span class="stat-num" id="statPrestadas">0</span>
+        <span class="stat-label">Prestadas</span>
+      </div>
+    </div>
+
+    <!-- Botón nuevo préstamo -->
+    <button id="btnNuevoPrestamo" class="btn-primary btn-full">
+      <span>➕</span> Nuevo Préstamo
+    </button>
+
+    <!-- Lista de préstamos agrupados por trabajador -->
+    <div id="listaPrestamos" class="cards-list">
+      <p class="empty-state">No hay préstamos activos</p>
+    </div>
+
+    <!-- Historial -->
+    <button id="btnHistorial" class="btn-secondary btn-full" style="margin-top:12px;">
+      📜 Historial de Hoy
+    </button>
+  </main>
+
+  <!-- ===== VISTA: CATÁLOGO DE HERRAMIENTAS ===== -->
+  <main id="view-herramientas" class="view">
+    <div class="view-header">
+      <input type="search" id="searchHerramientas" class="search-input" placeholder="Buscar herramienta...">
+      <button id="btnAddHerramienta" class="btn-primary">➕ Agregar</button>
+    </div>
+    <div id="listaHerramientas" class="cards-list">
+      <p class="empty-state">No hay herramientas registradas</p>
+    </div>
+  </main>
+
+  <!-- ===== VISTA: TRABAJADORES ===== -->
+  <main id="view-trabajadores" class="view">
+    <div class="view-header">
+      <input type="search" id="searchTrabajadores" class="search-input" placeholder="Buscar trabajador...">
+      <button id="btnAddTrabajador" class="btn-primary">➕ Agregar</button>
+    </div>
+    <div id="listaTrabajadores" class="cards-list">
+      <p class="empty-state">No hay trabajadores registrados</p>
+    </div>
+  </main>
+
+  <!-- ===== MODAL: AGREGAR/EDITAR HERRAMIENTA ===== -->
+  <div id="modalHerramienta" class="modal-overlay">
+    <div class="modal">
+      <h2 id="modalHerramientaTitle">Agregar Herramienta</h2>
+      <form id="formHerramienta">
+        <input type="hidden" id="herramientaId">
+        <div class="form-group">
+          <label for="herramientaNombre">Nombre</label>
+          <input type="text" id="herramientaNombre" placeholder="Ej: Rotomartillo Bosch" required>
+        </div>
+        <div class="form-group">
+          <label for="herramientaCodigo">Código / ID (opcional)</label>
+          <input type="text" id="herramientaCodigo" placeholder="Ej: HRR-001">
+        </div>
+        <div class="form-group">
+          <label for="herramientaNotas">Notas (opcional)</label>
+          <input type="text" id="herramientaNotas" placeholder="Ej: Color rojo, serie XYZ">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="cerrarModal('modalHerramienta')">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: AGREGAR/EDITAR TRABAJADOR ===== -->
+  <div id="modalTrabajador" class="modal-overlay">
+    <div class="modal">
+      <h2 id="modalTrabajadorTitle">Agregar Trabajador</h2>
+      <form id="formTrabajador">
+        <input type="hidden" id="trabajadorId">
+        <div class="form-group">
+          <label for="trabajadorNombre">Nombre completo</label>
+          <input type="text" id="trabajadorNombre" placeholder="Ej: Juan Pérez" required>
+        </div>
+        <div class="form-group">
+          <label for="trabajadorPuesto">Puesto (opcional)</label>
+          <input type="text" id="trabajadorPuesto" placeholder="Ej: Electricista">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="cerrarModal('modalTrabajador')">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: NUEVO PRÉSTAMO EN LOTE ===== -->
+  <div id="modalPrestamo" class="modal-overlay">
+    <div class="modal modal-large">
+      <h2>Nuevo Préstamo</h2>
+      <form id="formPrestamo">
+        <!-- Paso 1: Seleccionar trabajador -->
+        <div class="form-group">
+          <label for="prestamoTrabajador">Trabajador</label>
+          <select id="prestamoTrabajador" required>
+            <option value="">— Seleccionar trabajador —</option>
+          </select>
+        </div>
+        <!-- Paso 2: Seleccionar herramientas -->
+        <div class="form-group">
+          <label>Herramientas disponibles</label>
+          <div id="checklistHerramientas" class="checklist">
+            <p class="empty-state">No hay herramientas disponibles</p>
+          </div>
+        </div>
+        <!-- Fecha/hora auto -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="text" id="prestamoFecha" readonly>
+          </div>
+          <div class="form-group">
+            <label>Hora</label>
+            <input type="text" id="prestamoHora" readonly>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="prestamoNotas">Notas (opcional)</label>
+          <input type="text" id="prestamoNotas" placeholder="Ej: Para trabajo en 2do piso">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="cerrarModal('modalPrestamo')">Cancelar</button>
+          <button type="submit" class="btn-primary">✅ Confirmar Préstamo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: HISTORIAL ===== -->
+  <div id="modalHistorial" class="modal-overlay">
+    <div class="modal modal-large">
+      <h2>📜 Historial de Hoy</h2>
+      <div id="listaHistorial" class="cards-list">
+        <p class="empty-state">No hay registros hoy</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="cerrarModal('modalHistorial')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: CONFIGURACIÓN / RESPALDO ===== -->
+  <div id="modalConfig" class="modal-overlay">
+    <div class="modal">
+      <h2>⚙️ Configuración</h2>
+
+      <div class="config-section">
+        <h3>💾 Respaldo de Datos</h3>
+        <p class="config-desc">Exporta tus datos para compartir con el otro turno o como respaldo de seguridad.</p>
+        <button id="btnExportar" class="btn-primary btn-full">📤 Exportar Respaldo</button>
+      </div>
+
+      <div class="config-section">
+        <h3>📥 Importar Datos</h3>
+        <p class="config-desc">Carga un respaldo recibido del otro turno. <strong>⚠️ Esto reemplaza todos los datos actuales.</strong></p>
+        <label class="btn-secondary btn-full btn-file">
+          📥 Importar Respaldo
+          <input type="file" id="inputImportar" accept=".json" hidden>
+        </label>
+      </div>
+
+      <div class="config-section">
+        <h3>📋 Compartir por WhatsApp</h3>
+        <p class="config-desc">Genera un resumen de texto de los préstamos activos para enviar por WhatsApp.</p>
+        <button id="btnCompartirWA" class="btn-whatsapp btn-full">📱 Generar Resumen WhatsApp</button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="cerrarModal('modalConfig')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: DEVOLUCIÓN EN LOTE ===== -->
+  <div id="modalDevolucion" class="modal-overlay">
+    <div class="modal modal-large">
+      <h2>Devolver Herramientas</h2>
+      <p id="devolucionTrabajadorNombre" class="devolucion-worker"></p>
+      <div id="checklistDevolucion" class="checklist"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="cerrarModal('modalDevolucion')">Cancelar</button>
+        <button id="btnConfirmarDevolucion" class="btn-primary">✅ Devolver Seleccionadas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notifications -->
+  <div id="toast" class="toast"></div>
+
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

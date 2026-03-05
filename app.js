@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v15) =====
-console.log('App version: 15.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v16) =====
+console.log('App version: 16.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -111,6 +111,7 @@ const translations = {
         btn_export_excel: '📊 Excel',
         toast_excel_success: '✅ Excel exportado',
         toast_excel_empty: '⚠️ No hay herramientas para exportar',
+        toast_duplicate_code_err: '⚠️ Ya existe una herramienta con este código',
         excel_col_name: 'Nombre',
         excel_col_code: 'Código / ID',
         excel_col_notes: 'Notas',
@@ -225,6 +226,7 @@ const translations = {
         btn_export_excel: '📊 Excel',
         toast_excel_success: '✅ Excel exported',
         toast_excel_empty: '⚠️ No tools to export',
+        toast_duplicate_code_err: '⚠️ A tool with this code already exists',
         excel_col_name: 'Name',
         excel_col_code: 'Code / ID',
         excel_col_notes: 'Notes',
@@ -604,6 +606,19 @@ async function guardarHerramienta(e) {
         notas: document.getElementById('herramientaNotas').value.trim(),
         fechaCreacion: new Date().toISOString(),
     };
+
+    // Duplicate check for non-empty codes
+    if (data.codigo) {
+        const herramientas = await dbGetAll('herramientas');
+        const duplicate = herramientas.find(h =>
+            h.codigo.toLowerCase() === data.codigo.toLowerCase() &&
+            (!id || h.id !== parseInt(id))
+        );
+        if (duplicate) {
+            showToast(t('toast_duplicate_code_err'));
+            return;
+        }
+    }
 
     if (id) {
         data.id = parseInt(id);

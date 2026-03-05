@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v17) =====
-console.log('App version: 17.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v18) =====
+console.log('App version: 18.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -237,7 +237,7 @@ const translations = {
     }
 };
 
-let currentLang = localStorage.getItem('appLang') || 'es';
+let currentLang = localStorage.getItem('appLang') || 'en';
 
 function t(key, params = {}) {
     let text = translations[currentLang][key] || key;

@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v11) =====
-console.log('App version: 11.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v12) =====
+console.log('App version: 12.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -107,7 +107,15 @@ const translations = {
         toast_wa_fallback: '📋 Texto copiado (falló WhatsApp)',
         toast_ocr_processing: '🔍 Escaneando... Espera',
         toast_ocr_success: '✅ Código escaneado: {code}',
-        toast_ocr_err: '❌ Error OCR: No se pudo escanear'
+        toast_ocr_err: '❌ Error OCR: No se pudo escanear',
+        btn_export_excel: '📊 Excel',
+        toast_excel_success: '✅ Excel exportado',
+        toast_excel_empty: '⚠️ No hay herramientas para exportar',
+        excel_col_name: 'Nombre',
+        excel_col_code: 'Código / ID',
+        excel_col_notes: 'Notas',
+        excel_col_status: 'Estado',
+        excel_sheet_name: 'Herramientas'
     },
     en: {
         app_title: 'Tool Control',
@@ -213,7 +221,15 @@ const translations = {
         toast_wa_fallback: '📋 Text copied (WhatsApp failed)',
         toast_ocr_processing: '🔍 Scanning... Please wait',
         toast_ocr_success: '✅ Code scanned: {code}',
-        toast_ocr_err: '❌ OCR Error: Failed to scan'
+        toast_ocr_err: '❌ OCR Error: Failed to scan',
+        btn_export_excel: '📊 Excel',
+        toast_excel_success: '✅ Excel exported',
+        toast_excel_empty: '⚠️ No tools to export',
+        excel_col_name: 'Name',
+        excel_col_code: 'Code / ID',
+        excel_col_notes: 'Notes',
+        excel_col_status: 'Status',
+        excel_sheet_name: 'Tools'
     }
 };
 
@@ -263,13 +279,31 @@ async function handleOCRScan(e) {
     showToast(t('toast_ocr_processing'));
 
     try {
-        const result = await Tesseract.recognize(file, 'eng+spa', {
+        const result = await Tesseract.recognize(file, 'eng', {
             logger: m => console.log(m)
         });
 
-        let code = result.data.text.trim();
-        // Simple cleanup: remove non-alphanumeric at ends, keep common ID chars
-        code = code.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+        const rawText = result.data.text.trim();
+        console.log('OCR raw:', rawText);
+
+        // Extract serial-number-like tokens: alphanumeric with dashes
+        // Split by whitespace/newlines, filter for tokens that look like serial numbers
+        const tokens = rawText.split(/[\s\n\r]+/);
+        const serialTokens = tokens
+            .map(tk => tk.replace(/[^a-zA-Z0-9\-\/]/g, '')) // keep only alphanumeric, dash, slash
+            .filter(tk => tk.length >= 3); // at least 3 chars
+
+        // Pick the best candidate: longest token with at least one digit
+        let code = '';
+        for (const tk of serialTokens) {
+            if (/\d/.test(tk) && tk.length > code.length) {
+                code = tk;
+            }
+        }
+        // Fallback: if no token with digit, pick the longest one
+        if (!code && serialTokens.length > 0) {
+            code = serialTokens.reduce((a, b) => a.length >= b.length ? a : b, '');
+        }
 
         if (code) {
             document.getElementById('herramientaCodigo').value = code;
@@ -283,6 +317,45 @@ async function handleOCRScan(e) {
     } finally {
         e.target.value = ''; // Reset input
     }
+}
+
+// ===== EXCEL EXPORT =====
+async function exportarExcel() {
+    const herramientas = await dbGetAll('herramientas');
+    if (herramientas.length === 0) {
+        showToast(t('toast_excel_empty'));
+        return;
+    }
+
+    const prestamos = await dbGetAll('prestamos');
+    const prestamosActivos = prestamos.filter(p => p.activo);
+    const prestadaIds = new Set(prestamosActivos.map(p => p.herramientaId));
+
+    // Build data rows
+    const data = herramientas.map(h => ({
+        [t('excel_col_name')]: h.nombre || '',
+        [t('excel_col_code')]: h.codigo || '',
+        [t('excel_col_notes')]: h.notas || '',
+        [t('excel_col_status')]: prestadaIds.has(h.id) ? t('tool_loaned') : t('tool_available')
+    }));
+
+    // Create workbook
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    // Auto-size columns
+    const colWidths = Object.keys(data[0]).map(key => {
+        const maxLen = Math.max(key.length, ...data.map(row => (row[key] || '').length));
+        return { wch: Math.min(maxLen + 2, 50) };
+    });
+    ws['!cols'] = colWidths;
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, t('excel_sheet_name'));
+
+    // Generate and download
+    const fecha = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `herramientas_${fecha}.xlsx`);
+    showToast(t('toast_excel_success'));
 }
 
 function setLanguage(lang) {
@@ -311,6 +384,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btnAddHerramienta').addEventListener('click', () => abrirModalHerramienta());
     document.getElementById('btnAddTrabajador').addEventListener('click', () => abrirModalTrabajador());
     document.getElementById('btnExportar').addEventListener('click', exportarDatos);
+    document.getElementById('btnExportExcel').addEventListener('click', exportarExcel);
     document.getElementById('inputImportar').addEventListener('change', importarDatos);
     document.getElementById('btnCompartirWA').addEventListener('click', compartirWhatsApp);
     document.getElementById('btnConfirmarDevolucion').addEventListener('click', confirmarDevolucion);

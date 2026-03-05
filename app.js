@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v16) =====
-console.log('App version: 16.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v17) =====
+console.log('App version: 17.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -21,6 +21,7 @@ const translations = {
         btn_cancel: 'Cancelar',
         btn_save: 'Guardar',
         btn_confirm_loan: '✅ Confirmar Préstamo',
+        btn_confirm: 'Confirmar',
         btn_close: 'Cerrar',
         btn_return_selected: '✅ Devolver Seleccionadas',
         btn_bulk_load_start: '🚀 Cargar Trabajadores',
@@ -136,6 +137,7 @@ const translations = {
         btn_cancel: 'Cancel',
         btn_save: 'Save',
         btn_confirm_loan: '✅ Confirm Loan',
+        btn_confirm: 'Confirm',
         btn_close: 'Close',
         btn_return_selected: '✅ Return Selected',
         btn_bulk_load_start: '🚀 Load Workers',
@@ -271,6 +273,41 @@ function updateUI() {
         const wId = document.getElementById('trabajadorId').value;
         workerTitle.innerText = wId ? t('modal_worker_edit') : t('modal_worker_add');
     }
+}
+
+// ===== MODAL LOGIC =====
+function abrirModal(id) {
+    document.getElementById(id).classList.add('active');
+}
+
+function cerrarModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+function showConfirm(title, message, onConfirm) {
+    const modal = document.getElementById('modalConfirm');
+    const titleEl = document.getElementById('modalConfirmTitle');
+    const messageEl = document.getElementById('modalConfirmMessage');
+    const btnCancel = document.getElementById('btnConfirmCancel');
+    const btnOk = document.getElementById('btnConfirmOk');
+
+    titleEl.innerText = title;
+    messageEl.innerText = message;
+    btnOk.innerText = t('btn_confirm');
+
+    // Remove old listeners
+    const newBtnOk = btnOk.cloneNode(true);
+    btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+    const newBtnCancel = btnCancel.cloneNode(true);
+    btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+
+    newBtnOk.onclick = () => {
+        cerrarModal('modalConfirm');
+        onConfirm();
+    };
+    newBtnCancel.onclick = () => cerrarModal('modalConfirm');
+
+    abrirModal('modalConfirm');
 }
 
 // ===== OCR LOGIC =====
@@ -510,7 +547,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btnAddTrabajador').addEventListener('click', () => abrirModalTrabajador());
     document.getElementById('btnExportar').addEventListener('click', exportarDatos);
     document.getElementById('btnExportExcel').addEventListener('click', exportarExcel);
-    document.getElementById('inputImportar').addEventListener('change', importarDatos);
+    document.getElementById('inputImportar').addEventListener('change', importarConfig);
     document.getElementById('btnCompartirWA').addEventListener('click', compartirWhatsApp);
     document.getElementById('btnConfirmarDevolucion').addEventListener('click', confirmarDevolucion);
     document.getElementById('btnCargaMasiva').addEventListener('click', () => abrirModal('modalCargaMasiva'));
@@ -635,17 +672,19 @@ async function guardarHerramienta(e) {
 }
 
 async function eliminarHerramienta(id) {
-    if (!confirm(t('confirm_delete_tool'))) return;
     // Check if it's currently loaned
     const prestamos = await dbGetByIndex('prestamos', 'herramientaId', id);
     const activo = prestamos.find(p => p.activo);
     if (activo) {
-        showToast(t('toast_worker_loaned_err')); // Using generic loaned error
+        showToast(t('toast_worker_loaned_err'));
         return;
     }
-    await dbDelete('herramientas', id);
-    showToast(t('toast_tool_deleted'));
-    await refreshAll();
+
+    showConfirm(t('confirm_delete_tool'), t('confirm_delete_tool'), async () => {
+        await dbDelete('herramientas', id);
+        showToast(t('toast_tool_deleted'));
+        await refreshAll();
+    });
 }
 
 async function renderHerramientas() {
@@ -730,16 +769,18 @@ async function guardarTrabajador(e) {
 }
 
 async function eliminarTrabajador(id) {
-    if (!confirm(t('confirm_delete_worker'))) return;
     const prestamos = await dbGetByIndex('prestamos', 'trabajadorId', id);
     const activo = prestamos.find(p => p.activo);
     if (activo) {
         showToast(t('toast_worker_loaned_err'));
         return;
     }
-    await dbDelete('trabajadores', id);
-    showToast(t('toast_worker_deleted'));
-    await refreshAll();
+
+    showConfirm(t('confirm_delete_worker'), t('confirm_delete_worker'), async () => {
+        await dbDelete('trabajadores', id);
+        showToast(t('toast_worker_deleted'));
+        await refreshAll();
+    });
 }
 
 async function renderTrabajadores() {
@@ -1070,23 +1111,34 @@ async function exportarDatos() {
     }
 }
 
-async function importarDatos(e) {
+async function importarConfig(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!confirm(t('confirm_import'))) {
-        e.target.value = '';
-        return;
-    }
+    showConfirm(t('config_import_title'), t('confirm_import'), () => {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+                if (!data.herramientas || !data.trabajadores || !data.prestamos) {
+                    throw new Error('Formato inválido');
+                }
 
-    try {
-        const text = await file.text();
-        await importarRespaldo(text);
-        showToast(t('toast_import_success'));
-        await refreshAll();
-    } catch (err) {
-        showToast(t('toast_import_err'));
-    }
+                // Clear and load
+                await dbClearAll();
+                for (const h of data.herramientas) await dbAdd('herramientas', h);
+                for (const w of data.trabajadores) await dbAdd('trabajadores', w);
+                for (const p of data.prestamos) await dbAdd('prestamos', p);
+
+                showToast(t('toast_import_success'));
+                refreshAll();
+            } catch (err) {
+                console.error('Import error:', err);
+                showToast(t('toast_import_err'));
+            }
+        };
+        reader.readAsText(file);
+    });
     e.target.value = '';
 }
 

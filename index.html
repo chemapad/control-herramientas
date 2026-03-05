@@ -291,6 +291,19 @@
     </div>
   </div>
 
+  <!-- ===== MODAL: CONFIRMACIÓN GENÉRICA ===== -->
+  <div id="modalConfirm" class="modal-overlay">
+    <div class="modal">
+      <h2 id="modalConfirmTitle">Confirmar</h2>
+      <p id="modalConfirmMessage" style="margin-bottom: 20px; color: var(--text-secondary); line-height: 1.5;"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="btnConfirmCancel" data-i18n="btn_cancel">Cancelar</button>
+        <button type="button" class="btn-primary" id="btnConfirmOk"
+          style="background: var(--red); border-color: var(--red);">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast notifications -->
   <div id="toast" class="toast"></div>
 

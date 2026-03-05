@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v14) =====
-console.log('App version: 14.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v15) =====
+console.log('App version: 15.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -590,6 +590,8 @@ function abrirModalHerramienta(herramienta = null) {
     document.getElementById('herramientaNombre').value = herramienta ? herramienta.nombre : '';
     document.getElementById('herramientaCodigo').value = herramienta ? (herramienta.codigo || '') : '';
     document.getElementById('herramientaNotas').value = herramienta ? (herramienta.notas || '') : '';
+    const container = document.getElementById('ocrCandidates');
+    if (container) container.innerHTML = ''; // Clear old OCR chips
     abrirModal('modalHerramienta');
 }
 

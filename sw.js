@@ -1,10 +1,10 @@
-const CACHE_NAME = 'obra-control-v10';
+const CACHE_NAME = 'obra-control-v11';
 const ASSETS = [
     './',
     './index.html',
     './styles.css',
-    './app.js',
     './db.js',
+    './app.js',
     './manifest.json'
 ];
 
@@ -24,8 +24,18 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
+// Network-first strategy: always try network, fall back to cache for offline
 self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request).then((cached) => cached || fetch(event.request))
+        fetch(event.request)
+            .then((response) => {
+                // Clone and update cache with fresh response
+                const clone = response.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, clone);
+                });
+                return response;
+            })
+            .catch(() => caches.match(event.request))
     );
 });

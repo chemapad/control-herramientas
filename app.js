@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v10) =====
-console.log('App version: 10.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v11) =====
+console.log('App version: 11.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {

@@ -8,6 +8,20 @@ function openDB() {
     if (dbInstance) return Promise.resolve(dbInstance);
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        // Timeout: if open takes > 3s, reject
+        const timeout = setTimeout(() => {
+            console.error('openDB timeout — closing stale connection');
+            dbInstance = null;
+            reject(new Error('IndexedDB open timeout'));
+        }, 3000);
+
+        request.onblocked = () => {
+            console.warn('IndexedDB blocked — close other tabs or refresh');
+            clearTimeout(timeout);
+            reject(new Error('IndexedDB blocked'));
+        };
+
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
             if (!db.objectStoreNames.contains('materiales')) {
@@ -37,10 +51,20 @@ function openDB() {
             }
         };
         request.onsuccess = (e) => {
+            clearTimeout(timeout);
             dbInstance = e.target.result;
+            // If another tab triggers a version change, close this connection
+            dbInstance.onversionchange = () => {
+                dbInstance.close();
+                dbInstance = null;
+                console.log('DB closed due to versionchange in another tab');
+            };
             resolve(dbInstance);
         };
-        request.onerror = (e) => reject(e.target.error);
+        request.onerror = (e) => {
+            clearTimeout(timeout);
+            reject(e.target.error);
+        };
     });
 }
 

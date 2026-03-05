@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v8) =====
-console.log('App version: 8.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v9) =====
+console.log('App version: 9.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -253,12 +253,6 @@ function updateUI() {
         const wId = document.getElementById('trabajadorId').value;
         workerTitle.innerText = wId ? t('modal_worker_edit') : t('modal_worker_add');
     }
-    // Eventos OCR
-    document.getElementById('btnScanOCR').addEventListener('click', () => {
-        document.getElementById('ocrInput').click();
-    });
-
-    document.getElementById('ocrInput').addEventListener('change', handleOCRScan);
 }
 
 // ===== OCR LOGIC =====
@@ -331,6 +325,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Search
     document.getElementById('searchHerramientas').addEventListener('input', renderHerramientas);
     document.getElementById('searchTrabajadores').addEventListener('input', renderTrabajadores);
+
+    // Eventos OCR
+    const btnScanOCR = document.getElementById('btnScanOCR');
+    const ocrInput = document.getElementById('ocrInput');
+    if (btnScanOCR) {
+        btnScanOCR.addEventListener('click', () => ocrInput.click());
+    }
+    if (ocrInput) {
+        ocrInput.addEventListener('change', handleOCRScan);
+    }
 
     // Close modals on overlay click
     document.querySelectorAll('.modal-overlay').forEach(overlay => {

@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v9) =====
-console.log('App version: 9.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v10) =====
+console.log('App version: 10.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // ===== TAB NAVIGATION =====
 function switchTab(tabName) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
     document.getElementById(`view-${tabName}`).classList.add('active');
@@ -375,9 +375,15 @@ function showToast(message) {
 
 // ===== REFRESH ALL =====
 async function refreshAll() {
-    await renderPrestamosActivos();
-    await renderHerramientas();
-    await renderTrabajadores();
+    try {
+        await renderPrestamosActivos();
+    } catch (e) { console.error('Error renderPrestamosActivos:', e); }
+    try {
+        await renderHerramientas();
+    } catch (e) { console.error('Error renderHerramientas:', e); }
+    try {
+        await renderTrabajadores();
+    } catch (e) { console.error('Error renderTrabajadores:', e); }
 }
 
 // ===== HERRAMIENTAS CRUD =====
@@ -526,7 +532,7 @@ async function renderTrabajadores() {
     const search = document.getElementById('searchTrabajadores').value.toLowerCase();
     let trabajadores = await dbGetAll('trabajadores');
     if (search) {
-        trabajadores = trabajadores.filter(t => t.nombre.toLowerCase().includes(search));
+        trabajadores = trabajadores.filter(w => w.nombre.toLowerCase().includes(search));
     }
     const container = document.getElementById('listaTrabajadores');
 
@@ -577,7 +583,7 @@ async function abrirNuevoPrestamo() {
     // Fill worker select
     const select = document.getElementById('prestamoTrabajador');
     select.innerHTML = `<option value="">— ${t('label_worker')} —</option>` +
-        trabajadores.map(t => `<option value="${t.id}">${t.nombre}${t.puesto ? ' (' + t.puesto + ')' : ''}</option>`).join('');
+        trabajadores.map(w => `<option value="${w.id}">${w.nombre}${w.puesto ? ' (' + w.puesto + ')' : ''}</option>`).join('');
 
     // Fill available tools checklist
     const checklist = document.getElementById('checklistHerramientas');
@@ -729,7 +735,7 @@ async function renderPrestamosActivos() {
     const colors = ['#ff6b35', '#2ecc71', '#3498db', '#9b59b6', '#e74c3c', '#f39c12', '#1abc9c', '#e67e22'];
 
     container.innerHTML = Object.entries(groups).map(([wId, loans]) => {
-        const worker = trabajadores.find(t => t.id === parseInt(wId));
+        const worker = trabajadores.find(w => w.id === parseInt(wId));
         if (!worker) return '';
         const initials = worker.nombre.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         const colorIdx = parseInt(wId) % colors.length;
@@ -810,7 +816,7 @@ async function mostrarHistorial() {
     } else {
         container.innerHTML = delHoy.map(p => {
             const h = herramientas.find(hr => hr.id === p.herramientaId);
-            const w = trabajadores.find(t => t.id === p.trabajadorId);
+            const w = trabajadores.find(wk => wk.id === p.trabajadorId);
             const esDevolucion = p.fechaDevolucion && p.fechaDevolucion.slice(0, 10) === hoy;
             const tipo = p.activo ? '🔴' : (esDevolucion ? '🟢' : '🔴');
             const accion = p.activo ? t('tool_loaned') : (esDevolucion ? t('tool_returned') : t('tool_loaned'));
@@ -892,7 +898,7 @@ async function compartirWhatsApp() {
     let text = `${t('wa_title')}\n📅 ${formatFecha(new Date())} · ${formatHora(new Date())}\n\n`;
 
     for (const [wId, loans] of Object.entries(groups)) {
-        const w = trabajadores.find(t => t.id === parseInt(wId));
+        const w = trabajadores.find(wk => wk.id === parseInt(wId));
         text += `👷 *${w ? w.nombre : 'Unknown'}*\n`;
         for (const p of loans) {
             const h = herramientas.find(hr => hr.id === p.herramientaId);

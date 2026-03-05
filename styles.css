@@ -654,6 +654,44 @@ body {
   padding: 4px;
 }
 
+/* OCR Candidates */
+.ocr-candidates-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  min-height: 32px;
+}
+
+.ocr-chip {
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.ocr-chip:hover {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+}
+
+.ocr-chip.selected {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .ocr-chip {
+    padding: 8px 16px;
+    /* Larger targets for mobile */
+  }
+}
+
 .checklist-item {
   display: flex;
   align-items: center;

@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v12) =====
-console.log('App version: 12.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v13) =====
+console.log('App version: 13.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -272,42 +272,108 @@ function updateUI() {
 }
 
 // ===== OCR LOGIC =====
+// ===== OCR LOGIC =====
+async function preprocessImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const maxDim = 1200;
+                let width = img.width;
+                let height = img.height;
+                if (width > maxDim || height > maxDim) {
+                    const scale = maxDim / Math.max(width, height);
+                    width *= scale;
+                    height *= scale;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                const imageData = ctx.getImageData(0, 0, width, height);
+                const data = imageData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    const avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+                    const contrast = 1.3;
+                    let val = (avg - 128) * contrast + 128;
+                    val = val < 0 ? 0 : (val > 255 ? 255 : val);
+                    data[i] = data[i + 1] = data[i + 2] = val;
+                }
+                ctx.putImageData(imageData, 0, 0);
+                resolve(canvas.toDataURL('image/jpeg', 0.9));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function displayOCRCandidates(tokens) {
+    const container = document.getElementById('ocrCandidates');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // De-duplicate and filter
+    const uniqueTokens = [...new Set(tokens)];
+
+    uniqueTokens.forEach(token => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'ocr-chip';
+        chip.innerText = token;
+        chip.onclick = () => selectOCRCandidate(token, chip);
+        container.appendChild(chip);
+    });
+}
+
+function selectOCRCandidate(token, chip) {
+    document.getElementById('herramientaCodigo').value = token;
+    document.querySelectorAll('.ocr-chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+}
+
 async function handleOCRScan(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     showToast(t('toast_ocr_processing'));
+    const container = document.getElementById('ocrCandidates');
+    if (container) container.innerHTML = '';
 
     try {
-        const result = await Tesseract.recognize(file, 'eng', {
+        const processedImage = await preprocessImage(file);
+        const result = await Tesseract.recognize(processedImage, 'eng', {
             logger: m => console.log(m)
         });
 
         const rawText = result.data.text.trim();
         console.log('OCR raw:', rawText);
 
-        // Extract serial-number-like tokens: alphanumeric with dashes
-        // Split by whitespace/newlines, filter for tokens that look like serial numbers
-        const tokens = rawText.split(/[\s\n\r]+/);
-        const serialTokens = tokens
-            .map(tk => tk.replace(/[^a-zA-Z0-9\-\/]/g, '')) // keep only alphanumeric, dash, slash
-            .filter(tk => tk.length >= 3); // at least 3 chars
+        // Extract tokens that look like serial numbers
+        const tokens = rawText.split(/[\s\n\r]+/)
+            .map(tk => tk.replace(/[^a-zA-Z0-9\-\/]/g, ''))
+            .filter(tk => tk.length >= 4); // Usually serials are at least 4 chars
 
-        // Pick the best candidate: longest token with at least one digit
-        let code = '';
-        for (const tk of serialTokens) {
-            if (/\d/.test(tk) && tk.length > code.length) {
-                code = tk;
+        if (tokens.length > 0) {
+            displayOCRCandidates(tokens);
+            // Default to the first one (longest with digit usually best, let's keep that logic for auto-fill)
+            let best = '';
+            for (const tk of tokens) {
+                if (/\d/.test(tk) && tk.length > best.length) best = tk;
             }
-        }
-        // Fallback: if no token with digit, pick the longest one
-        if (!code && serialTokens.length > 0) {
-            code = serialTokens.reduce((a, b) => a.length >= b.length ? a : b, '');
-        }
+            if (!best) best = tokens[0];
 
-        if (code) {
-            document.getElementById('herramientaCodigo').value = code;
-            showToast(t('toast_ocr_success', { code }));
+            document.getElementById('herramientaCodigo').value = best;
+
+            // Mark the best as selected
+            const chips = document.querySelectorAll('.ocr-chip');
+            chips.forEach(c => {
+                if (c.innerText === best) c.classList.add('selected');
+            });
+
+            showToast(t('toast_ocr_success', { code: best }));
         } else {
             showToast(t('toast_ocr_err'));
         }
@@ -315,7 +381,7 @@ async function handleOCRScan(e) {
         console.error('OCR Error:', err);
         showToast(t('toast_ocr_err'));
     } finally {
-        e.target.value = ''; // Reset input
+        e.target.value = '';
     }
 }
 

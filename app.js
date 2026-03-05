@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v7) =====
-console.log('App version: 7.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v8) =====
+console.log('App version: 8.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -104,7 +104,10 @@ const translations = {
         modal_tool_edit: 'Editar Herramienta',
         modal_worker_add: 'Agregar Trabajador',
         modal_worker_edit: 'Editar Trabajador',
-        toast_wa_fallback: '📋 Texto copiado (falló WhatsApp)'
+        toast_wa_fallback: '📋 Texto copiado (falló WhatsApp)',
+        toast_ocr_processing: '🔍 Escaneando... Espera',
+        toast_ocr_success: '✅ Código escaneado: {code}',
+        toast_ocr_err: '❌ Error OCR: No se pudo escanear'
     },
     en: {
         app_title: 'Tool Control',
@@ -207,7 +210,10 @@ const translations = {
         modal_tool_edit: 'Edit Tool',
         modal_worker_add: 'Add Worker',
         modal_worker_edit: 'Edit Worker',
-        toast_wa_fallback: '📋 Text copied (WhatsApp failed)'
+        toast_wa_fallback: '📋 Text copied (WhatsApp failed)',
+        toast_ocr_processing: '🔍 Scanning... Please wait',
+        toast_ocr_success: '✅ Code scanned: {code}',
+        toast_ocr_err: '❌ OCR Error: Failed to scan'
     }
 };
 
@@ -246,6 +252,42 @@ function updateUI() {
     if (workerTitle) {
         const wId = document.getElementById('trabajadorId').value;
         workerTitle.innerText = wId ? t('modal_worker_edit') : t('modal_worker_add');
+    }
+    // Eventos OCR
+    document.getElementById('btnScanOCR').addEventListener('click', () => {
+        document.getElementById('ocrInput').click();
+    });
+
+    document.getElementById('ocrInput').addEventListener('change', handleOCRScan);
+}
+
+// ===== OCR LOGIC =====
+async function handleOCRScan(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    showToast(t('toast_ocr_processing'));
+
+    try {
+        const result = await Tesseract.recognize(file, 'eng+spa', {
+            logger: m => console.log(m)
+        });
+
+        let code = result.data.text.trim();
+        // Simple cleanup: remove non-alphanumeric at ends, keep common ID chars
+        code = code.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+
+        if (code) {
+            document.getElementById('herramientaCodigo').value = code;
+            showToast(t('toast_ocr_success', { code }));
+        } else {
+            showToast(t('toast_ocr_err'));
+        }
+    } catch (err) {
+        console.error('OCR Error:', err);
+        showToast(t('toast_ocr_err'));
+    } finally {
+        e.target.value = ''; // Reset input
     }
 }
 
@@ -401,22 +443,22 @@ async function renderHerramientas() {
         return;
     }
 
-    container.innerHTML = herramientas.map(h => {
-        const prestamo = prestamosActivos.find(p => p.herramientaId === h.id);
-        const trabajador = prestamo ? trabajadores.find(t => t.id === prestamo.trabajadorId) : null;
+    container.innerHTML = herramientas.map(hItem => {
+        const prestamo = prestamosActivos.find(p => p.herramientaId === hItem.id);
+        const trabajador = prestamo ? trabajadores.find(ti => ti.id === prestamo.trabajadorId) : null;
         const statusBadge = prestamo
             ? `<span class="badge badge-red">${t('tool_loaned')}</span>`
             : `<span class="badge badge-green">${t('tool_available')}</span>`;
         const prestamoInfo = prestamo && trabajador
             ? `<div class="card-subtitle">→ ${trabajador.nombre} · ${t('label_since')}: ${formatHora(prestamo.fecha)}</div>`
             : '';
-        const codigo = h.codigo ? `<span class="card-subtitle" style="display:inline;margin-left:8px;font-size:0.75rem;">${h.codigo}</span>` : '';
+        const codigo = hItem.codigo ? `<span class="card-subtitle" style="display:inline;margin-left:8px;font-size:0.75rem;">${hItem.codigo}</span>` : '';
 
         return `
       <div class="card">
         <div class="card-header">
           <div>
-            <span class="card-title">${h.nombre}</span>${codigo}
+            <span class="card-title">${hItem.nombre}</span>${codigo}
           </div>
           <div class="card-actions">
             ${statusBadge}
@@ -424,8 +466,8 @@ async function renderHerramientas() {
         </div>
         ${prestamoInfo}
         <div class="card-actions" style="margin-top:8px;">
-          <button class="btn-secondary btn-small" onclick="abrirModalHerramienta(${JSON.stringify(h).replace(/"/g, '&quot;')})">${t('btn_edit')}</button>
-          <button class="btn-danger btn-small" onclick="eliminarHerramienta(${h.id})">🗑️</button>
+          <button class="btn-secondary btn-small" onclick="abrirModalHerramienta(${JSON.stringify(hItem).replace(/"/g, '&quot;')})">${t('btn_edit')}</button>
+          <button class="btn-danger btn-small" onclick="eliminarHerramienta(${hItem.id})">🗑️</button>
         </div>
       </div>
     `;
@@ -493,18 +535,18 @@ async function renderTrabajadores() {
     const prestamos = await dbGetAll('prestamos');
     const activos = prestamos.filter(p => p.activo);
 
-    container.innerHTML = trabajadores.map(t => {
-        const count = activos.filter(p => p.trabajadorId === t.id).length;
+    container.innerHTML = trabajadores.map(w => {
+        const count = activos.filter(p => p.trabajadorId === w.id).length;
         const countBadge = count > 0
             ? `<span class="badge badge-yellow">${count} ${t('label_tools_short')}</span>`
             : '';
-        const puesto = t.puesto ? `<div class="card-subtitle">${t.puesto}</div>` : '';
+        const puesto = w.puesto ? `<div class="card-subtitle">${w.puesto}</div>` : '';
 
         return `
       <div class="card">
         <div class="card-header">
           <div>
-            <span class="card-title">${t.nombre}</span>
+            <span class="card-title">${w.nombre}</span>
             ${puesto}
           </div>
           <div class="card-actions">
@@ -512,8 +554,8 @@ async function renderTrabajadores() {
           </div>
         </div>
         <div class="card-actions" style="margin-top:8px;">
-          <button class="btn-secondary btn-small" onclick="abrirModalTrabajador(${JSON.stringify(t).replace(/"/g, '&quot;')})">${t('btn_edit')}</button>
-          <button class="btn-danger btn-small" onclick="eliminarTrabajador(${t.id})">🗑️</button>
+          <button class="btn-secondary btn-small" onclick="abrirModalTrabajador(${JSON.stringify(w).replace(/"/g, '&quot;')})">${t('btn_edit')}</button>
+          <button class="btn-danger btn-small" onclick="eliminarTrabajador(${w.id})">🗑️</button>
         </div>
       </div>
     `;

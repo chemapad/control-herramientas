@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#ff6b35">
+  <meta name="theme-color" content="#0c4381">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="description" content="Control de herramientas para obra de construcción - Funciona offline">
@@ -20,7 +20,8 @@
   <!-- ===== HEADER ===== -->
   <header class="app-header">
     <div class="header-logo">
-      <img src="logo.svg" alt="Accelevation Logo" class="app-logo">
+      <img src="https://www.gaylor.com/wp-content/uploads/2023/04/gaylor-primary-blue-logo.png"
+        alt="Gaylor Electric Logo" class="app-logo">
       <h1 data-i18n="app_title">Control de Herramientas</h1>
     </div>
     <button id="btnConfig" class="btn-icon" title="Configuración" data-i18n-title="config_title">⚙️</button>
@@ -59,7 +60,7 @@
 
     <!-- Lista de préstamos agrupados por trabajador -->
     <div id="listaPrestamos" class="cards-list">
-      <p class="empty-state">No hay préstamos activos</p>
+      <p class="empty-state" data-i18n="empty_loans">No hay préstamos activos</p>
     </div>
 
     <!-- Historial -->
@@ -76,7 +77,7 @@
       <button id="btnAddHerramienta" class="btn-primary" data-i18n="btn_add">➕ Agregar</button>
     </div>
     <div id="listaHerramientas" class="cards-list">
-      <p class="empty-state">No hay herramientas registradas</p>
+      <p class="empty-state" data-i18n="empty_tools">No hay herramientas registradas</p>
     </div>
   </main>
 
@@ -89,7 +90,7 @@
       <button id="btnAddTrabajador" class="btn-primary" data-i18n="btn_add">➕ Agregar</button>
     </div>
     <div id="listaTrabajadores" class="cards-list">
-      <p class="empty-state">No hay trabajadores registrados</p>
+      <p class="empty-state" data-i18n="empty_workers">No hay trabajadores registrados</p>
     </div>
   </main>
 
@@ -106,7 +107,12 @@
         </div>
         <div class="form-group">
           <label for="herramientaCodigo" data-i18n="label_code">Código / ID (opcional)</label>
-          <input type="text" id="herramientaCodigo" placeholder="Ej: HRR-001">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="herramientaCodigo" placeholder="Ej: HRR-001" style="flex: 1;">
+            <button type="button" class="btn-secondary" id="btnScanOCR" style="padding: 12px; font-size: 1.2rem;"
+              title="Escanear Código">📷</button>
+          </div>
+          <input type="file" id="ocrInput" accept="image/*" capture="environment" hidden>
         </div>
         <div class="form-group">
           <label for="herramientaNotas" data-i18n="label_notes">Notas (opcional)</label>
@@ -286,6 +292,7 @@
   <!-- Toast notifications -->
   <div id="toast" class="toast"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="db.js"></script>
   <script src="app.js"></script>
 </body>

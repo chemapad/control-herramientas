@@ -1,26 +1,28 @@
 /* ===== DESIGN TOKENS ===== */
 :root {
-  --bg-primary: #0f0f1a;
-  --bg-secondary: #1a1a2e;
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --bg-card-hover: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --text-primary: #f0f0f0;
-  --text-secondary: #a0a0b8;
-  --text-muted: #6a6a80;
-  --accent: #ff6b35;
-  --accent-glow: rgba(255, 107, 53, 0.3);
-  --accent-hover: #ff8555;
-  --green: #2ecc71;
-  --green-bg: rgba(46, 204, 113, 0.15);
-  --red: #e74c3c;
-  --red-bg: rgba(231, 76, 60, 0.15);
-  --yellow: #f1c40f;
-  --yellow-bg: rgba(241, 196, 15, 0.15);
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f3f5;
+  --glass-border: #dee2e6;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-muted: #6c757d;
+  --accent: #0c4381;
+  /* Gaylor Blue */
+  --accent-glow: rgba(12, 67, 129, 0.2);
+  --accent-hover: #0a3566;
+  --green: #28a745;
+  --green-bg: rgba(40, 167, 69, 0.1);
+  --red: #cf2e2e;
+  /* Gaylor Red */
+  --red-bg: rgba(207, 46, 46, 0.1);
+  --yellow: #ffc107;
+  --yellow-bg: rgba(255, 193, 7, 0.1);
   --whatsapp: #25d366;
-  --radius: 14px;
-  --radius-sm: 10px;
-  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   --transition: 0.2s ease;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -384,8 +386,8 @@ body {
   border-radius: var(--radius);
   padding: 14px 16px;
   transition: all var(--transition);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
 }
 
 .card:hover {
@@ -451,8 +453,8 @@ body {
   border-left: 4px solid var(--accent);
   border-radius: var(--radius);
   padding: 14px 16px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
 }
 
 .worker-group-header {
@@ -522,8 +524,6 @@ body {
   z-index: 1000;
   align-items: flex-end;
   justify-content: center;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   animation: fadeIn 0.2s ease;
 }
 
@@ -602,7 +602,7 @@ body {
 .form-group select,
 .form-group textarea {
   width: 100%;
-  background: var(--bg-card);
+  background: #ffffff;
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);

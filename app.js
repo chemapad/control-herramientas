@@ -1,5 +1,5 @@
-// ===== CONTROL DE HERRAMIENTAS — APP.JS (v13) =====
-console.log('App version: 13.0');
+// ===== CONTROL DE HERRAMIENTAS — APP.JS (v14) =====
+console.log('App version: 14.0');
 
 // ===== INTERNATIONALIZATION (i18n) =====
 const translations = {
@@ -272,7 +272,6 @@ function updateUI() {
 }
 
 // ===== OCR LOGIC =====
-// ===== OCR LOGIC =====
 async function preprocessImage(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -281,28 +280,40 @@ async function preprocessImage(file) {
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                const maxDim = 1200;
+
+                // Scale up image for better OCR resolution
+                const maxDim = 2000;
                 let width = img.width;
                 let height = img.height;
-                if (width > maxDim || height > maxDim) {
+                if (width < 1000 || height < 1000) {
+                    const scale = 2; // Double size for better detail on small labels
+                    width *= scale;
+                    height *= scale;
+                } else if (width > maxDim || height > maxDim) {
                     const scale = maxDim / Math.max(width, height);
                     width *= scale;
                     height *= scale;
                 }
+
                 canvas.width = width;
                 canvas.height = height;
+
+                // Grayscale and high contrast
+                ctx.filter = 'grayscale(100%) contrast(200%) brightness(110%)';
                 ctx.drawImage(img, 0, 0, width, height);
+
+                // Apply manual sharpening / binarization
                 const imageData = ctx.getImageData(0, 0, width, height);
                 const data = imageData.data;
                 for (let i = 0; i < data.length; i += 4) {
-                    const avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-                    const contrast = 1.3;
-                    let val = (avg - 128) * contrast + 128;
-                    val = val < 0 ? 0 : (val > 255 ? 255 : val);
+                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    // Binarize: make it strictly black or white for OCR clarity
+                    const val = avg > 120 ? 255 : 0;
                     data[i] = data[i + 1] = data[i + 2] = val;
                 }
                 ctx.putImageData(imageData, 0, 0);
-                resolve(canvas.toDataURL('image/jpeg', 0.9));
+
+                resolve(canvas.toDataURL('image/jpeg', 0.95));
             };
             img.src = e.target.result;
         };
@@ -351,23 +362,69 @@ async function handleOCRScan(e) {
         const rawText = result.data.text.trim();
         console.log('OCR raw:', rawText);
 
-        // Extract tokens that look like serial numbers
-        const tokens = rawText.split(/[\s\n\r]+/)
-            .map(tk => tk.replace(/[^a-zA-Z0-9\-\/]/g, ''))
-            .filter(tk => tk.length >= 4); // Usually serials are at least 4 chars
+        // Split by lines to keep proximity context
+        const lines = rawText.split(/[\n\r]+/);
+        let allTokens = [];
 
-        if (tokens.length > 0) {
-            displayOCRCandidates(tokens);
-            // Default to the first one (longest with digit usually best, let's keep that logic for auto-fill)
-            let best = '';
-            for (const tk of tokens) {
-                if (/\d/.test(tk) && tk.length > best.length) best = tk;
+        lines.forEach(line => {
+            // Keep alphanumeric and some symbols, trim the line
+            const cleanedLine = line.replace(/[^a-zA-Z0-9\-\/._\s]/g, '').trim();
+            if (!cleanedLine) return;
+
+            const parts = cleanedLine.split(/\s+/).filter(p => p.length >= 2);
+
+            // Heuristic bit: look for serial-like sequences (e.g., GS + 2669RT)
+            for (let i = 0; i < parts.length; i++) {
+                let current = parts[i];
+
+                // 1. Check if we should merge with next token (e.g., "GS" "2669RT" -> "GS-2669RT")
+                if (i < parts.length - 1) {
+                    const next = parts[i + 1];
+                    const isPrefix = /^[A-Z]{2,4}$/.test(current);
+                    const isSuffix = /^[0-9\-\/]+[A-Z0-9]*$/.test(next);
+
+                    if (isPrefix && isSuffix) {
+                        allTokens.push(current + '-' + next);
+                        // Also try without the dash just in case
+                        allTokens.push(current + next);
+                    }
+                }
+
+                // 2. Add individual token if it looks like a code (digit + letter, or just long)
+                if (current.length >= 3) {
+                    allTokens.push(current);
+                }
             }
-            if (!best) best = tokens[0];
+        });
+
+        // Final filtering and de-duplication
+        const finalTokens = [...new Set(allTokens)]
+            .map(tk => tk.replace(/[^a-zA-Z0-9\-\/]/g, ''))
+            .filter(tk => tk.length >= 3);
+
+        if (finalTokens.length > 0) {
+            displayOCRCandidates(finalTokens);
+
+            // Intelligent selection: Preference for tokens with mixed alpha and numeric
+            let best = '';
+            for (const tk of finalTokens) {
+                const hasDigit = /\d/.test(tk);
+                const hasLetter = /[a-zA-Z]/.test(tk);
+                const hasDash = tk.includes('-');
+
+                // Score based on likelihood of being a serial
+                if (hasDigit && hasLetter) {
+                    if (tk.length > best.length || !(/[a-zA-Z]/.test(best) && /\d/.test(best))) {
+                        best = tk;
+                    }
+                } else if (!best && hasDigit && tk.length >= 4) {
+                    best = tk;
+                }
+            }
+            if (!best) best = finalTokens[0];
 
             document.getElementById('herramientaCodigo').value = best;
 
-            // Mark the best as selected
             const chips = document.querySelectorAll('.ocr-chip');
             chips.forEach(c => {
                 if (c.innerText === best) c.classList.add('selected');
